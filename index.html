@@ -177,11 +177,6 @@ const screens=["screen-home","screen-quiz","screen-result"];
 function show(id){screens.forEach(s=>$(s).classList.toggle("hide",s!==id));window.scrollTo(0,0);}
 
 function buildURL(data){
-  const detalle=PREGUNTAS.map((p,i)=>{
-    const letra=answers[i]===null?"-":LETRAS[answers[i]];
-    const bien=answers[i]===p.c;
-    return `${i+1}:${letra}${bien?"✓":"✗"}`;
-  }).join("|");
   const params=new URLSearchParams({
     asignatura:ASIGNATURA,
     nombre:data.nombre,
@@ -189,8 +184,13 @@ function buildURL(data){
     puntaje:data.puntaje,
     total:data.total,
     porcentaje:data.porcentaje,
-    fecha:data.fecha,
-    detalle:detalle
+    fecha:data.fecha
+  });
+  // Una entrada por pregunta: p1=A✓, p2=C✗, ...
+  PREGUNTAS.forEach((p,i)=>{
+    const letra=answers[i]===null?"-":LETRAS[answers[i]];
+    const bien=answers[i]===p.c;
+    params.append("p"+(i+1), letra+(bien?"✓":"✗"));
   });
   return SCRIPT_URL+"?"+params.toString();
 }
