@@ -340,13 +340,32 @@ function renderQuestion(){
   const il=$("q-illus");
   if(p.illus){il.innerHTML=p.illus;il.classList.remove("hide");}else{il.classList.add("hide");il.innerHTML="";}
   const box=$("q-opts"); box.innerHTML="";
+  const answered=answers[current]!==null;
   p.o.forEach((txt,i)=>{
     const d=document.createElement("div");
-    d.className="opt"+(answers[current]===i?" sel":"");
+    let cls="opt";
+    if(answered){
+      if(i===p.c) cls+=" correct";
+      else if(i===answers[current]) cls+=" wrong";
+    } else if(answers[current]===i) cls+=" sel";
+    d.className=cls;
     d.innerHTML=`<span class="key">${LETRAS[i]}</span><span>${txt}</span>`;
-    d.onclick=()=>{answers[current]=i;renderQuestion();};
+    if(!answered) d.onclick=()=>{answers[current]=i;renderQuestion();};
     box.appendChild(d);
   });
+
+  // Feedback inmediato
+  let fb=$("q-feedback");
+  if(!fb){fb=document.createElement("div");fb.id="q-feedback";fb.style.cssText="margin-top:14px;padding:12px 16px;border-radius:12px;border:2px solid;font-weight:700;font-size:15px";box.after(fb);}
+  if(answered){
+    const bien=answers[current]===p.c;
+    fb.style.background=bien?"#d4f5e6":"#fbe0d8";
+    fb.style.borderColor=bien?"var(--good)":"var(--bad)";
+    fb.style.color=bien?"var(--good)":"var(--bad)";
+    const expHtml=p.exp?`<div style="margin-top:8px;font-weight:400;font-size:13.5px;line-height:1.55;color:var(--ink)"><strong>💡 Explicación:</strong> ${p.exp}</div>`:"";
+    fb.innerHTML=(bien?"✓ ¡Correcto!":"✗ Incorrecto. La respuesta correcta es: <strong>"+LETRAS[p.c]+") "+p.o[p.c]+"</strong>")+expHtml;
+    fb.style.display="block";
+  } else {fb.style.display="none";}
   $("btn-prev").style.visibility=current===0?"hidden":"visible";
   $("btn-next").disabled=answers[current]===null;
   $("btn-next").textContent=current===PREGUNTAS.length-1?"Ver resultados ✓":"Siguiente ▶";
