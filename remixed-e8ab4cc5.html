@@ -1,0 +1,323 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{--ink:#15183a;--navy:#1f2452;--amber:#ffb627;--amber-deep:#f59e0b;--sky:#5ab3ff;--paper:#fbfaf6;--cream:#eef0f7;--rose:#ff5d73;--good:#1f9d6b;--bad:#e0492c;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--cream);color:var(--ink);font-family:'DM Sans',sans-serif;-webkit-font-smoothing:antialiased}
+  body{min-height:100vh;background:radial-gradient(circle at 10% 6%,rgba(90,179,255,.18),transparent 38%),radial-gradient(circle at 92% 96%,rgba(255,182,39,.18),transparent 40%),var(--cream);padding:18px;}
+  .wrap{max-width:780px;margin:0 auto}
+  .card{background:var(--paper);border:2px solid var(--ink);border-radius:22px;box-shadow:8px 8px 0 var(--ink);overflow:hidden}
+  .pad{padding:28px}
+  h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;line-height:1.0;letter-spacing:-.02em}
+  h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:600}
+  .eyebrow{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--amber-deep)}
+  .btn{font-family:'DM Sans',sans-serif;font-weight:700;font-size:16px;border:2px solid var(--ink);border-radius:50px;padding:14px 26px;cursor:pointer;background:var(--amber);color:var(--ink);box-shadow:4px 4px 0 var(--ink);transition:transform .08s,box-shadow .08s}
+  .btn:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink)}
+  .btn:active{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink)}
+  .btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+  .btn.ghost{background:transparent}
+  .btn.dark{background:var(--navy);color:var(--amber)}
+  .link{background:none;border:none;color:var(--amber-deep);font-weight:700;cursor:pointer;text-decoration:underline;font-family:inherit;font-size:14px}
+  .field{margin-top:16px}
+  .field label{display:block;font-weight:700;font-size:14px;margin-bottom:6px}
+  .field input{width:100%;padding:13px 15px;border:2px solid var(--ink);border-radius:12px;font-family:inherit;font-size:16px;background:#fff;color:var(--ink)}
+  .field input:focus{outline:3px solid var(--amber)}
+  .hide{display:none !important}
+  .band{background:var(--navy);color:var(--paper);display:flex;align-items:center;gap:18px;padding:24px 28px;position:relative;overflow:hidden}
+  .band .glyph{position:absolute;right:-6px;top:-14px;opacity:.18;font-family:'Bricolage Grotesque';font-weight:800;font-size:150px;color:var(--amber);line-height:1}
+  .opts{display:grid;gap:12px;margin-top:20px}
+  .opt{display:flex;align-items:center;gap:14px;border:2px solid var(--ink);border-radius:14px;background:#fff;padding:14px 16px;cursor:pointer;font-size:16px;font-weight:500;transition:background .12s,transform .08s}
+  .opt:hover{transform:translateX(3px)}
+  .opt .key{flex:0 0 34px;height:34px;border:2px solid var(--ink);border-radius:9px;display:grid;place-items:center;font-weight:700;background:var(--cream)}
+  .opt.sel{background:var(--amber)}.opt.sel .key{background:var(--navy);color:var(--amber)}
+  .opt.correct{background:#d4f5e6;border-color:var(--good)}.opt.correct .key{background:var(--good);color:#fff}
+  .opt.wrong{background:#fbe0d8;border-color:var(--bad)}.opt.wrong .key{background:var(--bad);color:#fff}
+  .prog-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;font-size:13px;font-weight:700}
+  .prog{height:12px;border:2px solid var(--ink);border-radius:50px;background:#fff;overflow:hidden}
+  .prog>span{display:block;height:100%;background:var(--amber-deep);transition:width .3s}
+  .illus{display:grid;place-items:center;background:var(--cream);border:2px solid var(--ink);border-radius:16px;padding:14px;margin-top:16px}
+  .extra{margin-top:16px;border:2px solid var(--ink);border-radius:12px;overflow:hidden}
+  .extra table{width:100%;border-collapse:collapse;font-size:14px}
+  .extra th,.extra td{border:1px solid var(--ink);padding:7px 10px;text-align:center}
+  .extra th{background:var(--navy);color:var(--paper);font-size:12px}
+  .score-ring{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+  .ring{width:130px;height:130px;flex:0 0 130px}
+  .review{margin-top:18px;display:grid;gap:10px}
+  .rev{border:2px solid var(--ink);border-radius:12px;padding:12px 14px;background:#fff}
+  .rev .q{font-weight:700;margin-bottom:4px;font-size:14px}
+  .rev .a{font-size:14px}
+  .tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 9px;border-radius:50px;border:2px solid var(--ink);margin-right:6px}
+  .tag.ok{background:#d4f5e6}.tag.no{background:#fbe0d8}
+  .note{font-size:12.5px;color:var(--navy);background:rgba(255,182,39,.22);border:1.5px dashed var(--amber-deep);border-radius:10px;padding:10px 12px;margin-top:14px}
+  .note.red{background:rgba(224,73,44,.12);border-color:var(--bad);color:var(--bad)}
+  .note.green{background:rgba(31,157,107,.12);border-color:var(--good);color:var(--good)}
+  .spinner{display:inline-block;width:18px;height:18px;border:3px solid #ccc;border-top-color:var(--navy);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:8px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .footmeta{text-align:center;font-size:12px;color:var(--amber-deep);margin-top:16px;font-weight:600}
+  @media(max-width:560px){.pad{padding:20px}.band{padding:20px}h1{font-size:28px}}
+</style>
+
+<div class="wrap">
+
+  <!-- REGISTRO -->
+  <div id="screen-home" class="card">
+    <div class="band">
+      <div class="glyph">√x</div>
+      <div style="position:relative;z-index:2">
+        <div class="eyebrow" style="color:var(--amber)">Saber 11 · Matemáticas · Grado 11°</div>
+        <h1 style="font-size:34px;margin-top:8px">Simulador ICFES<br>de Matemáticas</h1>
+      </div>
+    </div>
+    <div class="pad">
+      <p style="font-size:15px;line-height:1.55">Prueba de práctica tipo Saber 11 con <strong>25 preguntas</strong>. Registra tu nombre y curso, responde todas las preguntas y al terminar verás tu puntaje. El docente podrá ver los resultados en su hoja de Google Sheets.</p>
+      <div class="field"><label for="inp-name">Nombre completo del estudiante</label>
+        <input id="inp-name" type="text" placeholder="Ej.: Juan Sebastián Gómez" autocomplete="off"></div>
+      <div class="field"><label for="inp-course">Curso</label>
+        <input id="inp-course" type="text" placeholder="Ej.: 11°A" autocomplete="off"></div>
+      <div style="display:flex;gap:12px;align-items:center;margin-top:24px;flex-wrap:wrap">
+        <button class="btn" id="btn-start">Comenzar prueba ▶</button>
+        <button class="link" id="btn-teacher">Panel del docente</button>
+      </div>
+      <p id="home-err" style="color:var(--bad);font-weight:700;margin-top:10px"></p>
+    </div>
+  </div>
+
+  <!-- PRUEBA -->
+  <div id="screen-quiz" class="card hide">
+    <div class="pad">
+      <div class="prog-row"><span id="q-counter">Pregunta 1 de 25</span><span id="q-student"></span></div>
+      <div class="prog"><span id="prog-bar" style="width:4%"></span></div>
+      <div style="margin-top:22px">
+        <div class="eyebrow" id="q-tema">Tema</div>
+        <h2 id="q-text" style="font-size:21px;margin-top:6px;line-height:1.3"></h2>
+      </div>
+      <div id="q-extra" class="extra hide"></div>
+      <div id="q-illus" class="illus hide"></div>
+      <div class="opts" id="q-opts"></div>
+      <div style="display:flex;justify-content:space-between;margin-top:24px;gap:12px">
+        <button class="btn ghost" id="btn-prev">◀ Anterior</button>
+        <button class="btn" id="btn-next" disabled>Siguiente ▶</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTADOS -->
+  <div id="screen-result" class="card hide">
+    <div class="band"><div style="position:relative;z-index:2">
+      <div class="eyebrow" style="color:var(--amber)">Resultados</div>
+      <h1 style="font-size:28px;margin-top:6px" id="res-name">—</h1>
+    </div></div>
+    <div class="pad">
+      <div class="score-ring">
+        <svg class="ring" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="50" fill="none" stroke="#d7dbe9" stroke-width="14"/>
+          <circle id="ring-fill" cx="60" cy="60" r="50" fill="none" stroke="var(--good)" stroke-width="14" stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="314" transform="rotate(-90 60 60)"/>
+          <text id="ring-txt" x="60" y="58" text-anchor="middle" font-family="Bricolage Grotesque,sans-serif" font-size="28" font-weight="800" fill="#15183a">0</text>
+          <text x="60" y="78" text-anchor="middle" font-size="11" fill="#1f2452" font-weight="700">de 25</text>
+        </svg>
+        <div>
+          <h2 id="res-msg" style="font-size:24px"></h2>
+          <p id="res-sub" style="font-size:14px;margin-top:4px;color:var(--navy)"></p>
+          <p id="res-saved" style="font-size:13px;margin-top:10px;font-weight:700"></p>
+        </div>
+      </div>
+      <h2 style="margin-top:26px;font-size:18px">Revisión de respuestas</h2>
+      <div class="review" id="res-review"></div>
+      <div style="display:flex;gap:12px;margin-top:24px;flex-wrap:wrap">
+        <button class="btn dark" id="btn-again">Nuevo estudiante</button>
+        <button class="link" id="btn-teacher2">Panel del docente</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL DOCENTE -->
+  <div id="screen-teacher" class="card hide">
+    <div class="band"><div style="position:relative;z-index:2">
+      <div class="eyebrow" style="color:var(--amber)">Acceso docente</div>
+      <h1 style="font-size:26px;margin-top:6px">Resultados en Google Sheets</h1>
+    </div></div>
+    <div class="pad">
+      <div class="note green" style="margin-bottom:16px">
+        ✓ Los resultados se guardan automáticamente en tu hoja de Google Sheets al terminar cada prueba. Para ver la tabla completa, abre directamente tu hoja de cálculo en Google Drive.
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:16px">
+        <button class="btn" id="btn-open-sheets">Abrir Google Sheets ↗</button>
+        <button class="link" id="btn-back-home">← Inicio</button>
+      </div>
+      <div class="note">
+        <strong>Cómo usar:</strong> Cada vez que un estudiante termina la prueba, su resultado (nombre, curso, puntaje, porcentaje y fecha) se registra automáticamente en la hoja <strong>"Resultados"</strong> de tu Google Sheets. Desde allí puedes filtrar, ordenar o exportar a Excel.
+      </div>
+    </div>
+  </div>
+
+  <div class="footmeta">Simulador de práctica · Matemáticas Saber 11 · Preguntas originales</div>
+</div>
+
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMrKr8zH4a6saHbOvpy4MSwxh7_BkCoIi03_D_nyTF3YeVnP-Gz8psXTc4JJHhs_IjXg/exec";
+const SHEETS_URL = "https://docs.google.com/spreadsheets/";
+
+const SV = {
+  vennDep:`<svg width="260" height="150" viewBox="0 0 260 150"><g stroke="#15183a" stroke-width="2.5"><circle cx="105" cy="75" r="58" fill="rgba(90,179,255,.25)"/><circle cx="155" cy="75" r="58" fill="rgba(255,182,39,.30)"/></g><g font-family="DM Sans" font-weight="700" font-size="16" text-anchor="middle" fill="#15183a"><text x="78" y="80">20</text><text x="130" y="80">8</text><text x="182" y="80">12</text></g><g font-family="DM Sans" font-size="13" fill="#15183a"><text x="70" y="20">Fútbol</text><text x="170" y="20">Básquet</text><text x="222" y="140">Ninguno: 10</text></g></svg>`,
+  vennBici:`<svg width="260" height="150" viewBox="0 0 260 150"><g stroke="#15183a" stroke-width="2.5"><circle cx="105" cy="75" r="58" fill="rgba(90,179,255,.25)"/><circle cx="155" cy="75" r="58" fill="rgba(255,182,39,.30)"/></g><g font-family="DM Sans" font-weight="700" font-size="16" text-anchor="middle" fill="#15183a"><text x="78" y="80">25</text><text x="130" y="80">5</text><text x="182" y="80">20</text></g><g font-family="DM Sans" font-size="13" fill="#15183a"><text x="74" y="20">Carro</text><text x="166" y="20">Bicicleta</text><text x="210" y="140">Ninguno: 10</text></g></svg>`,
+  bars:`<svg width="280" height="170" viewBox="0 0 280 170"><line x1="35" y1="140" x2="265" y2="140" stroke="#15183a" stroke-width="2"/><line x1="35" y1="20" x2="35" y2="140" stroke="#15183a" stroke-width="2"/><g stroke="#15183a" stroke-width="2"><rect x="55" y="92" width="36" height="48" fill="#5ab3ff"/><rect x="105" y="60" width="36" height="80" fill="#ffb627"/><rect x="155" y="104" width="36" height="36" fill="#5ab3ff"/><rect x="205" y="76" width="36" height="64" fill="#5ab3ff"/></g><g font-family="DM Sans" font-size="12" text-anchor="middle" fill="#15183a"><text x="73" y="155">Ene</text><text x="123" y="155">Feb</text><text x="173" y="155">Mar</text><text x="223" y="155">Abr</text></g><g font-family="DM Sans" font-weight="700" font-size="12" text-anchor="middle" fill="#15183a"><text x="73" y="86">40</text><text x="123" y="54">60</text><text x="173" y="98">30</text><text x="223" y="70">50</text></g><text x="150" y="14" text-anchor="middle" font-family="DM Sans" font-size="11" fill="#1f2452">Ventas por mes (millones)</text></svg>`,
+  ramp:`<svg width="280" height="170" viewBox="0 0 280 170"><line x1="40" y1="140" x2="260" y2="140" stroke="#15183a" stroke-width="2"/><rect x="40" y="40" width="14" height="100" fill="#1f2452"/><line x1="54" y1="40" x2="220" y2="140" stroke="#ff5d73" stroke-width="3"/><line x1="127" y1="140" x2="127" y2="96" stroke="#ffb627" stroke-width="4"/><g font-family="DM Sans" font-size="12" fill="#15183a"><text x="18" y="95">3 m</text><text x="118" y="158">2 m</text><text x="138" y="120">h</text><text x="225" y="120">6 m (base total)</text></g></svg>`,
+  polar:`<svg width="220" height="200" viewBox="0 0 220 200"><g stroke="#c9cee0" stroke-width="1.5"><circle cx="110" cy="110" r="30" fill="none"/><circle cx="110" cy="110" r="55" fill="none"/><circle cx="110" cy="110" r="80" fill="none"/></g><line x1="110" y1="110" x2="205" y2="110" stroke="#15183a" stroke-width="1.5"/><circle cx="110" cy="110" r="4" fill="#15183a"/><g font-family="DM Sans" font-weight="700" font-size="12" fill="#1f2452"><circle cx="155" cy="80" r="5" fill="#ff5d73"/><text x="160" y="78">P(50, 60°)</text><circle cx="125" cy="62" r="5" fill="#5ab3ff"/><text x="86" y="52">Q(30, 90°)</text><circle cx="30" cy="110" r="5" fill="#1f9d6b"/><text x="10" y="128">R(70,180°)</text><circle cx="135" cy="98" r="5" fill="#f59e0b"/><text x="140" y="100">S(20,30°)</text></g><text x="180" y="125" font-family="DM Sans" font-size="10" fill="#15183a">Base</text></svg>`
+};
+
+const PREGUNTAS = [
+ {tema:"Promedio (estadística)",q:"En una tienda se registró el número de clientes atendidos durante 5 días: 18, 22, 19, 25 y 21. ¿Cuál es el promedio diario de clientes?",o:["20","21","22","25"],c:1},
+ {tema:"Interpretación de fórmulas",q:"Una papelería vende cuadernos a $4.000 entre semana y a $6.000 los fines de semana; a ese precio se le suma un impuesto del 10 %. Un cliente compra 3 cuadernos un martes y 2 un sábado. ¿Cuál expresión permite calcular el valor total a pagar?",o:["(3×4.000 + 2×6.000) × (1 + 0,10)","(3×4.000 + 2×6.000) × 0,10","(3 + 2) × (4.000 + 6.000) × 1,10","3×4.000×0,10 + 2×6.000"],c:0},
+ {tema:"Conjuntos · Diagrama de Venn",illus:SV.vennDep,q:"De 50 estudiantes se preguntó qué deporte practican. Según el diagrama, un profesor afirma en una tabla que 28 practican fútbol y 15 practican básquet. ¿Es válida esa información?",o:["Sí, porque los totales de la tabla coinciden con el diagrama.","No, porque en el diagrama 20 personas practican básquet y la tabla indica 15.","Sí, porque la suma de todos los grupos es 50.","No, porque no se incluyó a quienes no practican ningún deporte."],c:1},
+ {tema:"Combinatoria",q:"Para formar una pareja de baile se debe elegir 1 hombre y 1 mujer de un grupo con 4 hombres y 5 mujeres. ¿Cuántas parejas diferentes se pueden formar?",o:["9","18","20","45"],c:2},
+ {tema:"Lectura de tablas",extra:`<table><tr><th>Producto</th><th>Precio unitario</th><th>Unidades vendidas</th></tr><tr><td>A</td><td>$3.000</td><td>40</td></tr><tr><td>B</td><td>$5.000</td><td>30</td></tr><tr><td>C</td><td>$2.000</td><td>80</td></tr></table>`,q:"La tabla muestra las ventas de tres productos. ¿Cuál producto generó el mayor ingreso total (precio × unidades)?",o:["Producto A","Producto B","Producto C","Los tres generaron lo mismo"],c:2},
+ {tema:"Series y crecimiento exponencial",q:"Andrés ahorra así: el primer mes guarda $1.000 y cada mes siguiente duplica lo del mes anterior. ¿Cuánto habrá ahorrado en TOTAL al final del mes 5?",o:["$16.000","$31.000","$32.000","$62.000"],c:1},
+ {tema:"Porcentajes",q:"Camila gana $1.200.000 al mes y ahorra el 5 % de su sueldo cada mes. Si ahorra durante 8 meses, ¿cuánto dinero ahorrará en total?",o:["$60.000","$96.000","$480.000","$600.000"],c:2},
+ {tema:"Lectura de gráficas",illus:SV.bars,q:"La gráfica muestra las ventas de una empresa durante cuatro meses. ¿En cuál mes las ventas fueron mayores?",o:["Enero","Febrero","Marzo","Abril"],c:1},
+ {tema:"Razonamiento con porcentajes",q:"Una máquina clasificó 1.000 papas por peso y 400 de ellas pesan entre 25 y 30 g. ¿Qué porcentaje del total representa este grupo?",o:["35 %","25 %","60 %","40 %"],c:3},
+ {tema:"Muestreo (estadística)",q:"Para estimar la intención de voto de todo un país, una encuestadora llama solo a 500 personas de la ciudad capital. ¿Por qué el resultado puede diferir mucho de la realidad?",o:["Porque la única forma de obtener datos precisos es encuestar a toda la población.","Porque la muestra es demasiado grande y genera errores.","Porque solo se tiene en cuenta la opinión de una ciudad y no de todo el país.","Porque las encuestas telefónicas nunca son confiables."],c:2},
+ {tema:"Área",q:"Una torta rectangular de 40 cm de base por 30 cm de altura se reparte en porciones rectangulares iguales. Una porción mide 10 cm × 15 cm. ¿Cuál es el área de esa porción?",o:["40 cm²","150 cm²","225 cm²","1.200 cm²"],c:1},
+ {tema:"Conversión de unidades",q:"Para hallar el peso total de tres cajas (500 kg, 300 kg y 1 tonelada) un empleado calcula: 500 + 300 + 1 = 801. Esta solución es:",o:["Correcta, porque se suman los tres valores directamente.","Incorrecta, porque 1 tonelada equivale a 1.000 kg y las unidades deben ser iguales antes de sumar.","Correcta, porque el resultado se expresa en la unidad mayor.","Incorrecta, porque debió multiplicar en lugar de sumar."],c:1},
+ {tema:"Geometría · Área del círculo",q:"Un terreno rectangular tiene una zona en forma de cuarto de círculo de radio 4 m. ¿Cuál procedimiento permite hallar el área de ese cuarto de círculo? (Área del círculo = π·r²)",o:["Multiplicar 2 × π × 4.","Multiplicar π × 16 y dividir el resultado entre 4.","Multiplicar π × 4 y dividir entre 4.","Multiplicar 8 × 6 y dividir entre 4."],c:1},
+ {tema:"Interpretación de datos",extra:`<table><tr><th>Candidato</th><th>E</th><th>F</th><th>G</th><th>H</th><th>I</th></tr><tr><td>Votos</td><td>2.000</td><td>5.000</td><td>4.500</td><td>7.000</td><td>3.400</td></tr></table>`,q:"La tabla muestra los votos de cinco candidatos. ¿Cuál de las siguientes afirmaciones es FALSA?",o:["Con la tabla se puede identificar al candidato más votado.","El candidato F obtuvo más votos que el candidato H.","Con la tabla se puede calcular el total de votos.","El candidato H fue el más votado."],c:1},
+ {tema:"Patrones y tendencias",extra:`<table><tr><th>Mes</th><th>Ene</th><th>Feb</th><th>Mar</th><th>Abr</th></tr><tr><td>Ahorro</td><td>$130.000</td><td>$160.000</td><td>$190.000</td><td>$220.000</td></tr></table>`,q:"La tabla muestra el dinero ahorrado al finalizar cada mes. ¿Cuál es la tendencia del ahorro?",o:["Aumenta $30.000 cada mes.","Disminuye $30.000 cada mes.","Aumenta $100.000 cada mes.","Se mantiene constante."],c:0},
+ {tema:"Promedio",q:"Un taller registró el número de piezas reemplazadas en 3 vehículos: 6, 5 y 10. ¿Cuál es el promedio de piezas reemplazadas?",o:["6","7","10","21"],c:1},
+ {tema:"Conjuntos · Diagrama de Venn",illus:SV.vennBici,q:"En una encuesta sobre el transporte usado por 60 personas se obtuvo el diagrama. ¿Cuántas personas usan bicicleta en total?",o:["20","25","30","5"],c:1},
+ {tema:"Crecimiento exponencial",q:"El número de usuarios de una aplicación se duplica cada año. En 2020 tenía 5.000 usuarios. ¿Cuántos usuarios tendrá en 2024?",o:["40.000","20.000","160.000","80.000"],c:3},
+ {tema:"Teorema de Pitágoras",q:"Un triángulo rectángulo tiene catetos de 6 cm y 8 cm. ¿Cuál es la longitud de la hipotenusa?",o:["12 cm","48 cm","14 cm","10 cm"],c:3},
+ {tema:"Álgebra · Factorización",q:"La distancia recorrida se calcula con: (8)(4) + ½(2)(4²). ¿Cuál de las siguientes expresiones es equivalente, factorizando el tiempo (4)?",o:["4 × (8 + ½ × 2 × 4²)","4 × (8 + ½ × 2 × 4)","8 × (4 + ½ × 2 × 4)","4² × (8 + ½ × 2)"],c:1},
+ {tema:"Razonamiento cuantitativo",q:"Un archivo pesa 20 MB. La velocidad de descarga es 500 KB por segundo y 1 MB = 1.000 KB. ¿Cuál procedimiento NO permite calcular el tiempo (en segundos) de descarga?",o:["Multiplicar 20 por 1.000 y dividir el resultado entre 500.","Dividir 20 entre 500 y multiplicar el resultado por 1.000.","Dividir 500 entre 20 y multiplicar el resultado por 1.000.","Convertir 20 MB en 20.000 KB y dividir entre 500."],c:2},
+ {tema:"Semejanza de triángulos (Thales)",illus:SV.ramp,q:"Una rampa va desde lo alto de un muro de 3 m hasta el piso, a 6 m de la base del muro. A 2 m del muro se coloca una columna vertical de altura h. ¿Cuál procedimiento permite hallar h?",o:["Dividir 6 entre 4 y multiplicar por 3.","Dividir 2 entre 6 y multiplicar por 3.","Dividir 4 entre 6 y multiplicar el resultado por 3.","Multiplicar 3 × 6 y dividir entre 2."],c:2},
+ {tema:"Coordenadas polares",illus:SV.polar,q:"En coordenadas polares (r, θ), cuatro drones se ubican respecto a una base: P(50, 60°), Q(30, 90°), R(70, 180°) y S(20, 30°), donde r es la distancia a la base. ¿Cuál es el orden, del más cercano al más lejano de la base?",o:["R, P, Q, S","S, Q, P, R","Q, S, P, R","S, P, Q, R"],c:1},
+ {tema:"Operaciones con enteros",q:"Un repartidor sale de la tienda y avanza 4 cuadras (1ª entrega); para la 2ª avanza el doble de lo anterior; para la 3ª regresa 3 cuadras; finalmente avanza 2 cuadras hasta su casa. ¿Cuál operación da la distancia, en cuadras, entre la tienda y su casa?",o:["4 + 8 + 3 + 2","4 + 8 − 3 + 2","4 × 2 − 3 + 2","4 + 8 − 3 − 2"],c:1},
+ {tema:"Orden de números negativos",q:"Se midió la temperatura mínima de 4 ciudades: Ciudad 1: −7,6 °C; Ciudad 2: −7,09 °C; Ciudad 3: −7,62 °C; Ciudad 4: −7,53 °C. ¿Cuál es el orden de MENOR a MAYOR temperatura?",o:["Ciudad 1, Ciudad 3, Ciudad 4, Ciudad 2","Ciudad 3, Ciudad 1, Ciudad 4, Ciudad 2","Ciudad 2, Ciudad 4, Ciudad 1, Ciudad 3","Ciudad 3, Ciudad 4, Ciudad 1, Ciudad 2"],c:1}
+];
+const LETRAS=["A","B","C","D"];
+
+let student={name:"",course:""};
+let answers=new Array(PREGUNTAS.length).fill(null);
+let current=0;
+
+const $=id=>document.getElementById(id);
+const screens=["screen-home","screen-quiz","screen-result","screen-teacher"];
+function show(id){screens.forEach(s=>$(s).classList.toggle("hide",s!==id));window.scrollTo(0,0);}
+
+/* ===== ENVÍO A GOOGLE SHEETS ===== */
+function sendToSheets(data) {
+  const params = new URLSearchParams({
+    nombre:     data.nombre,
+    curso:      data.curso,
+    puntaje:    data.puntaje,
+    total:      data.total,
+    porcentaje: data.porcentaje,
+    fecha:      data.fecha
+  });
+  return SCRIPT_URL + "?" + params.toString();
+}
+
+/* ===== INICIO ===== */
+$("btn-start").onclick=()=>{
+  const n=$("inp-name").value.trim(), c=$("inp-course").value.trim();
+  if(n.length<3){$("home-err").textContent="✗ Escribe el nombre completo del estudiante.";return;}
+  if(!c){$("home-err").textContent="✗ Escribe el curso (ej.: 11°A).";return;}
+  $("home-err").textContent="";
+  student={name:n,course:c};
+  answers=new Array(PREGUNTAS.length).fill(null); current=0;
+  $("q-student").textContent=n.split(" ")[0]+" · "+c;
+  show("screen-quiz"); renderQuestion();
+};
+
+/* ===== PREGUNTAS ===== */
+function renderQuestion(){
+  const p=PREGUNTAS[current];
+  $("q-counter").textContent=`Pregunta ${current+1} de ${PREGUNTAS.length}`;
+  $("prog-bar").style.width=((current+1)/PREGUNTAS.length*100)+"%";
+  $("q-tema").textContent=p.tema;
+  $("q-text").textContent=p.q;
+  const ex=$("q-extra");
+  if(p.extra){ex.innerHTML=p.extra;ex.classList.remove("hide");}else{ex.classList.add("hide");ex.innerHTML="";}
+  const il=$("q-illus");
+  if(p.illus){il.innerHTML=p.illus;il.classList.remove("hide");}else{il.classList.add("hide");il.innerHTML="";}
+  const box=$("q-opts"); box.innerHTML="";
+  p.o.forEach((txt,i)=>{
+    const d=document.createElement("div");
+    d.className="opt"+(answers[current]===i?" sel":"");
+    d.innerHTML=`<span class="key">${LETRAS[i]}</span><span>${txt}</span>`;
+    d.onclick=()=>{answers[current]=i;renderQuestion();};
+    box.appendChild(d);
+  });
+  $("btn-prev").style.visibility=current===0?"hidden":"visible";
+  $("btn-next").disabled=answers[current]===null;
+  $("btn-next").textContent=current===PREGUNTAS.length-1?"Ver resultados ✓":"Siguiente ▶";
+}
+$("btn-prev").onclick=()=>{if(current>0){current--;renderQuestion();}};
+$("btn-next").onclick=()=>{
+  if(answers[current]===null) return;
+  if(current<PREGUNTAS.length-1){current++;renderQuestion();}else finishQuiz();
+};
+
+/* ===== FINALIZAR ===== */
+async function finishQuiz(){
+  let score=0;
+  PREGUNTAS.forEach((p,i)=>{if(answers[i]===p.c)score++;});
+  const total=PREGUNTAS.length, pct=Math.round(score/total*100);
+  const record={nombre:student.name,curso:student.course,puntaje:score,total,porcentaje:pct,fecha:new Date().toLocaleString("es-CO")};
+
+  // Mostrar pantalla con spinner mientras se envía
+  $("res-name").textContent=student.name;
+  $("ring-fill").setAttribute("stroke-dashoffset",314-(314*score/total));
+  $("ring-fill").setAttribute("stroke",pct>=80?"#1f9d6b":pct>=50?"#f59e0b":"#ff5d73");
+  $("ring-txt").textContent=score;
+  let msg,sub;
+  if(pct>=85){msg="¡Excelente! 🎯";sub="Gran dominio del razonamiento matemático.";}
+  else if(pct>=70){msg="¡Muy bien! 👏";sub="Buen desempeño; afina algunos temas.";}
+  else if(pct>=50){msg="Vas progresando";sub="Repasa los temas marcados como incorrectos.";}
+  else{msg="A reforzar 📚";sub="Conviene repasar los conceptos y volver a practicar.";}
+  $("res-msg").textContent=msg; $("res-sub").textContent=sub;
+  $("res-saved").innerHTML=`<span class="spinner"></span> Guardando resultado...`;
+  show("screen-result");
+
+  // Revisión
+  const rev=$("res-review"); rev.innerHTML="";
+  PREGUNTAS.forEach((p,i)=>{
+    const bien=answers[i]===p.c;
+    const d=document.createElement("div"); d.className="rev";
+    d.innerHTML=`<div class="q">${i+1}. ${p.q}</div>
+      <div class="a"><span class="tag ${bien?'ok':'no'}">${bien?'Correcta':'Incorrecta'}</span>
+      Tu respuesta: <strong>${answers[i]===null?'—':LETRAS[answers[i]]+') '+p.o[answers[i]]}</strong>
+      ${bien?'':`<br>Respuesta correcta: <strong>${LETRAS[p.c]}) ${p.o[p.c]}</strong>`}</div>`;
+    rev.appendChild(d);
+  });
+
+  // Generar URL de registro
+  const url = sendToSheets(record);
+  $("res-saved").innerHTML=`
+    <div class="note" style="margin-top:0">
+      <strong>⚠ Paso final obligatorio:</strong> Para registrar tu resultado, debes hacer clic en el botón de abajo. Se abrirá una pestaña nueva — si ves <strong>{"ok":true}</strong> el registro fue exitoso. Luego cierra esa pestaña.
+    </div>
+    <button class="btn" style="margin-top:12px" onclick="window.open('${url}','_blank')">
+      📋 Registrar resultado de ${student.name}
+    </button>
+    <p id="reg-confirm" style="margin-top:10px;font-weight:700;color:var(--good)"></p>`;
+
+  // Marcar como registrado al hacer clic
+  setTimeout(()=>{
+    const btn = $("res-saved").querySelector("button");
+    if(btn) btn.addEventListener("click", ()=>{
+      setTimeout(()=>{ document.getElementById("reg-confirm").textContent="✓ Si viste {\"ok\":true}, tu resultado quedó guardado."; },1500);
+    });
+  },100);
+}
+
+$("btn-again").onclick=()=>{$("inp-name").value="";$("inp-course").value="";show("screen-home");};
+$("btn-teacher").onclick=()=>show("screen-teacher");
+$("btn-teacher2").onclick=()=>show("screen-teacher");
+$("btn-back-home").onclick=()=>show("screen-home");
+$("btn-open-sheets").onclick=()=>window.open(SHEETS_URL,"_blank");
+
+show("screen-home");
+</script>
