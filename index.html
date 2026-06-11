@@ -1,376 +1,282 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Simulador · Funciones Lineales</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800&display=swap');
-  :root{--bg:#0a0e1a;--surface:#111827;--surface2:#1a2235;--accent:#00e5ff;--accent2:#ff6b6b;--accent3:#a78bfa;--correct:#10b981;--wrong:#ef4444;--text:#e2e8f0;--muted:#64748b;--grid:rgba(0,229,255,0.06);--line:rgba(0,229,255,0.15);}
-  *{margin:0;padding:0;box-sizing:border-box;}
-  body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
-  body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 60% 40% at 20% 10%,rgba(0,229,255,0.05) 0%,transparent 60%),radial-gradient(ellipse 50% 50% at 80% 80%,rgba(167,139,250,0.05) 0%,transparent 60%);}
-  .app{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:24px 20px;}
-  header{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;padding-bottom:20px;border-bottom:1px solid var(--line);}
-  .logo-f{font-size:2rem;font-weight:800;color:var(--accent);letter-spacing:-2px;margin-right:10px;}
-  .logo-text{font-size:0.75rem;font-family:'Space Mono',monospace;color:var(--muted);letter-spacing:3px;text-transform:uppercase;}
-  .logo-sub{font-family:'Space Mono',monospace;font-size:0.55rem;color:var(--muted);letter-spacing:1px;margin-top:3px;}
-  .score-board{display:flex;gap:20px;}
-  .score-item{text-align:center;}
-  .score-num{font-size:1.5rem;font-weight:800;display:block;}
-  .score-label{font-family:'Space Mono',monospace;font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:2px;}
-  .score-correct .score-num{color:var(--correct);}
-  .score-wrong .score-num{color:var(--wrong);}
-  .score-total .score-num{color:var(--accent3);}
-  .progress-bar{height:3px;background:var(--surface2);border-radius:2px;margin-bottom:28px;overflow:hidden;}
-  .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent3));border-radius:2px;transition:width 0.5s ease;}
-  .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:24px;}
-  #registerScreen{max-width:480px;margin:60px auto;}
-  #registerScreen h2{font-size:1.8rem;font-weight:800;margin-bottom:6px;}
-  #registerScreen p{color:var(--muted);font-family:'Space Mono',monospace;font-size:0.75rem;margin-bottom:28px;line-height:1.6;}
-  .field{margin-bottom:18px;}
-  .field label{display:block;font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--accent3);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;}
-  .field input,.field select{width:100%;padding:13px 16px;background:var(--surface2);border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;color:var(--text);font-family:'Syne',sans-serif;font-size:0.95rem;outline:none;transition:border-color 0.2s;}
-  .field input:focus,.field select:focus{border-color:var(--accent);}
-  .field select option{background:var(--surface2);}
-  .start-btn{width:100%;padding:15px;background:linear-gradient(135deg,var(--accent),var(--accent3));border:none;border-radius:10px;color:#0a0e1a;font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;letter-spacing:1px;cursor:pointer;text-transform:uppercase;margin-top:8px;transition:all 0.2s;}
-  .start-btn:hover{filter:brightness(1.1);transform:translateY(-1px);}
-  .err-msg{color:var(--wrong);font-family:'Space Mono',monospace;font-size:0.75rem;margin-top:10px;display:none;}
-  .main-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;}
-  @media(max-width:700px){.main-grid{grid-template-columns:1fr;}}
-  .graph-card{padding:20px;}
-  .graph-title{font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:3px;margin-bottom:14px;}
-  canvas{display:block;width:100%;border-radius:8px;background:var(--bg);}
-  .equation-display{text-align:center;margin-top:14px;font-family:'Space Mono',monospace;font-size:1.3rem;color:var(--accent);letter-spacing:1px;padding:10px;background:rgba(0,229,255,0.05);border-radius:8px;border:1px solid rgba(0,229,255,0.15);}
-  .graph-info{display:flex;gap:16px;margin-top:10px;flex-wrap:wrap;}
-  .ginfo{font-family:'Space Mono',monospace;font-size:0.68rem;color:var(--muted);display:flex;align-items:center;gap:6px;}
-  .ginfo-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);display:inline-block;}
-  .question-tag{font-family:'Space Mono',monospace;font-size:0.6rem;color:var(--accent3);text-transform:uppercase;letter-spacing:3px;margin-bottom:8px;}
-  .question-type-badge{display:inline-block;padding:3px 10px;border-radius:99px;font-size:0.65rem;font-family:'Space Mono',monospace;margin-bottom:14px;border:1px solid;}
-  .badge-pendiente{color:#fbbf24;border-color:#fbbf24;background:rgba(251,191,36,0.08);}
-  .badge-intercepto{color:var(--accent);border-color:var(--accent);background:rgba(0,229,255,0.08);}
-  .badge-punto{color:var(--accent3);border-color:var(--accent3);background:rgba(167,139,250,0.08);}
-  .badge-grafica{color:#34d399;border-color:#34d399;background:rgba(52,211,153,0.08);}
-  .question-text{font-size:1.05rem;font-weight:700;line-height:1.5;margin-bottom:22px;min-height:60px;}
-  .options-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
-  .option-btn{background:var(--surface2);border:1.5px solid rgba(255,255,255,0.08);border-radius:10px;padding:14px 12px;color:var(--text);font-family:'Space Mono',monospace;font-size:0.85rem;cursor:pointer;transition:all 0.2s ease;text-align:left;line-height:1.4;}
-  .option-btn:hover:not(:disabled){border-color:var(--accent);background:rgba(0,229,255,0.06);transform:translateY(-1px);}
-  .option-btn.correct{border-color:var(--correct);background:rgba(16,185,129,0.12);color:#6ee7b7;}
-  .option-btn.wrong{border-color:var(--wrong);background:rgba(239,68,68,0.1);color:#fca5a5;}
-  .option-btn:disabled{cursor:not-allowed;}
-  .option-letter{display:inline-block;width:20px;height:20px;border-radius:4px;background:rgba(255,255,255,0.08);font-size:0.7rem;text-align:center;line-height:20px;margin-right:8px;font-weight:700;}
-  .option-btn.correct .option-letter{background:var(--correct);color:#fff;}
-  .option-btn.wrong .option-letter{background:var(--wrong);color:#fff;}
-  .feedback{padding:12px 16px;border-radius:10px;font-size:0.88rem;font-family:'Space Mono',monospace;line-height:1.5;min-height:60px;opacity:0;transform:translateY(6px);transition:all 0.3s ease;margin-bottom:16px;}
-  .feedback.show{opacity:1;transform:translateY(0);}
-  .feedback.correct-fb{background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);color:#6ee7b7;}
-  .feedback.wrong-fb{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#fca5a5;}
-  .next-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--accent),var(--accent3));border:none;border-radius:10px;color:#0a0e1a;font-family:'Syne',sans-serif;font-weight:800;font-size:0.9rem;letter-spacing:1px;cursor:pointer;opacity:0;transform:translateY(4px);transition:all 0.3s ease;text-transform:uppercase;}
-  .next-btn.show{opacity:1;transform:translateY(0);}
-  .next-btn:hover{filter:brightness(1.1);transform:translateY(-1px);}
-  .concept-panel{grid-column:1/-1;margin-top:4px;}
-  .concept-title{font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:3px;margin-bottom:12px;}
-  .concepts-row{display:flex;gap:12px;flex-wrap:wrap;}
-  .concept-chip{background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:12px 16px;flex:1;min-width:140px;}
-  .chip-label{font-family:'Space Mono',monospace;font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:2px;display:block;margin-bottom:6px;}
-  .chip-value{font-size:0.95rem;font-weight:700;color:var(--accent);}
-  .end-screen{text-align:center;padding:60px 20px;display:none;animation:fadeIn 0.5s ease;}
-  @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-  .end-icon{font-size:4rem;margin-bottom:16px;}
-  .end-title{font-size:2.5rem;font-weight:800;margin-bottom:8px;}
-  .end-sub{color:var(--muted);font-family:'Space Mono',monospace;font-size:0.85rem;margin-bottom:32px;}
-  .end-stats{display:flex;justify-content:center;gap:32px;margin-bottom:36px;}
-  .end-stat{text-align:center;}
-  .end-stat-num{font-size:2.5rem;font-weight:800;display:block;}
-  .end-stat-label{font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:2px;}
-  .end-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:20px;}
-  .restart-btn{padding:16px 40px;background:linear-gradient(135deg,var(--accent),var(--accent3));border:none;border-radius:12px;color:#0a0e1a;font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;letter-spacing:1px;cursor:pointer;text-transform:uppercase;transition:all 0.2s;}
-  .restart-btn:hover{filter:brightness(1.1);transform:translateY(-2px);}
-  .register-note{font-family:'Space Mono',monospace;font-size:0.72rem;color:var(--muted);background:rgba(0,229,255,0.05);border:1px dashed rgba(0,229,255,0.2);border-radius:10px;padding:12px 16px;margin-top:16px;line-height:1.6;}
+  :root{--ink:#15183a;--navy:#1f2452;--amber:#ffb627;--amber-deep:#f59e0b;--sky:#5ab3ff;--paper:#fbfaf6;--cream:#eef0f7;--rose:#ff5d73;--good:#1f9d6b;--bad:#e0492c;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--cream);color:var(--ink);font-family:'DM Sans',sans-serif;-webkit-font-smoothing:antialiased}
+  body{min-height:100vh;background:radial-gradient(circle at 10% 6%,rgba(90,179,255,.18),transparent 38%),radial-gradient(circle at 92% 96%,rgba(255,182,39,.18),transparent 40%),var(--cream);padding:18px;}
+  .wrap{max-width:780px;margin:0 auto}
+  .card{background:var(--paper);border:2px solid var(--ink);border-radius:22px;box-shadow:8px 8px 0 var(--ink);overflow:hidden}
+  .pad{padding:28px}
+  h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;line-height:1.0;letter-spacing:-.02em}
+  h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:600}
+  .eyebrow{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--amber-deep)}
+  .btn{font-family:'DM Sans',sans-serif;font-weight:700;font-size:16px;border:2px solid var(--ink);border-radius:50px;padding:14px 26px;cursor:pointer;background:var(--amber);color:var(--ink);box-shadow:4px 4px 0 var(--ink);transition:transform .08s,box-shadow .08s}
+  .btn:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink)}
+  .btn:active{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink)}
+  .btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+  .btn.ghost{background:transparent}
+  .btn.dark{background:var(--navy);color:var(--amber)}
+  .link{background:none;border:none;color:var(--amber-deep);font-weight:700;cursor:pointer;text-decoration:underline;font-family:inherit;font-size:14px}
+  .field{margin-top:16px}
+  .field label{display:block;font-weight:700;font-size:14px;margin-bottom:6px}
+  .field input{width:100%;padding:13px 15px;border:2px solid var(--ink);border-radius:12px;font-family:inherit;font-size:16px;background:#fff;color:var(--ink)}
+  .field input:focus{outline:3px solid var(--amber)}
+  .hide{display:none !important}
+  .band{background:var(--navy);color:var(--paper);display:flex;align-items:center;gap:18px;padding:24px 28px;position:relative;overflow:hidden}
+  .band .glyph{position:absolute;right:-6px;top:-14px;opacity:.18;font-family:'Bricolage Grotesque';font-weight:800;font-size:150px;color:var(--amber);line-height:1}
+  .opts{display:grid;gap:12px;margin-top:20px}
+  .opt{display:flex;align-items:center;gap:14px;border:2px solid var(--ink);border-radius:14px;background:#fff;padding:14px 16px;cursor:pointer;font-size:16px;font-weight:500;transition:background .12s,transform .08s}
+  .opt:hover{transform:translateX(3px)}
+  .opt .key{flex:0 0 34px;height:34px;border:2px solid var(--ink);border-radius:9px;display:grid;place-items:center;font-weight:700;background:var(--cream)}
+  .opt.sel{background:var(--amber)}.opt.sel .key{background:var(--navy);color:var(--amber)}
+  .prog-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;font-size:13px;font-weight:700}
+  .prog{height:12px;border:2px solid var(--ink);border-radius:50px;background:#fff;overflow:hidden}
+  .prog>span{display:block;height:100%;background:var(--amber-deep);transition:width .3s}
+  .illus{display:grid;place-items:center;background:var(--cream);border:2px solid var(--ink);border-radius:16px;padding:14px;margin-top:16px}
+  .extra{margin-top:16px;border:2px solid var(--ink);border-radius:12px;overflow:hidden}
+  .extra table{width:100%;border-collapse:collapse;font-size:14px}
+  .extra th,.extra td{border:1px solid var(--ink);padding:7px 10px;text-align:center}
+  .extra th{background:var(--navy);color:var(--paper);font-size:12px}
+  .score-ring{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+  .ring{width:130px;height:130px;flex:0 0 130px}
+  .review{margin-top:18px;display:grid;gap:10px}
+  .rev{border:2px solid var(--ink);border-radius:12px;padding:12px 14px;background:#fff}
+  .rev .q{font-weight:700;margin-bottom:4px;font-size:14px}
+  .rev .a{font-size:14px}
+  .tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 9px;border-radius:50px;border:2px solid var(--ink);margin-right:6px}
+  .tag.ok{background:#d4f5e6}.tag.no{background:#fbe0d8}
+  .note{font-size:12.5px;color:var(--navy);background:rgba(255,182,39,.22);border:1.5px dashed var(--amber-deep);border-radius:10px;padding:10px 12px;margin-top:14px}
+  .footmeta{text-align:center;font-size:12px;color:var(--amber-deep);margin-top:16px;font-weight:600}
+  @media(max-width:560px){.pad{padding:20px}.band{padding:20px}h1{font-size:28px}}
 </style>
-</head>
-<body>
-<div class="app">
 
-  <header>
-    <div style="display:flex;align-items:baseline;gap:10px">
-      <span class="logo-f">f(x)</span>
-      <div>
-        <div class="logo-text">Simulador · Funciones Lineales</div>
-        <div class="logo-sub">Inst. Ed. Técnica Agropecuaria de Luruaco &nbsp;·&nbsp; Docente: Jorge Royero</div>
-      </div>
-    </div>
-    <div style="display:flex;align-items:center;gap:16px">
-      <div class="score-board" id="scoreBoard" style="display:none">
-        <div class="score-item score-correct"><span class="score-num" id="sCorrect">0</span><span class="score-label">Correctas</span></div>
-        <div class="score-item score-wrong"><span class="score-num" id="sWrong">0</span><span class="score-label">Incorrectas</span></div>
-        <div class="score-item score-total"><span class="score-num" id="sTotal">0</span><span class="score-label">Total</span></div>
-      </div>
-    </div>
-  </header>
-
-  <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
-
+<div class="wrap">
   <!-- REGISTRO -->
-  <div id="registerScreen" class="card">
-    <h2>Bienvenido/a 👋</h2>
-    <p>Ingresa tus datos para comenzar el simulador de funciones lineales.<br>Al terminar, registra tu resultado para que el docente pueda verlo.</p>
-    <div class="field">
-      <label>Nombre completo</label>
-      <input type="text" id="studentName" placeholder="Ej: María García López" autocomplete="off">
+  <div id="screen-home" class="card">
+    <div class="band">
+      <div class="glyph">√x</div>
+      <div style="position:relative;z-index:2">
+        <div class="eyebrow" style="color:var(--amber)">Saber 11 · Matemáticas · Grado 11°</div>
+        <h1 style="font-size:34px;margin-top:8px">Simulador ICFES<br>de Matemáticas</h1>
+      </div>
     </div>
-    <div class="field">
-      <label>Curso</label>
-      <select id="studentCourse">
-        <option value="">— Selecciona tu curso —</option>
-        <option>10°A</option><option>10°B</option><option>10°C</option>
-        <option>11°A</option><option>11°B</option>
-      </select>
+    <div class="pad">
+      <p style="font-size:15px;line-height:1.55">Prueba de práctica tipo Saber 11 con <strong>25 preguntas</strong>. Registra tu nombre y curso, responde todas las preguntas y al terminar verás tu puntaje detallado.</p>
+      <div class="field"><label for="inp-name">Nombre completo del estudiante</label>
+        <input id="inp-name" type="text" placeholder="Ej.: Juan Sebastián Gómez" autocomplete="off"></div>
+      <div class="field"><label for="inp-course">Curso</label>
+        <input id="inp-course" type="text" placeholder="Ej.: 11°A" autocomplete="off"></div>
+      <div style="display:flex;gap:12px;align-items:center;margin-top:24px;flex-wrap:wrap">
+        <button class="btn" id="btn-start">Comenzar prueba ▶</button>
+      </div>
+      <p id="home-err" style="color:var(--bad);font-weight:700;margin-top:10px"></p>
     </div>
-    <button class="start-btn" onclick="startQuiz()">Comenzar simulación →</button>
-    <div class="err-msg" id="regErr">⚠ Por favor completa tu nombre y curso.</div>
   </div>
 
-  <!-- QUIZ -->
-  <div id="quizContent" style="display:none">
-    <div class="main-grid">
-      <div class="card graph-card">
-        <div class="graph-title">Gráfica · Plano cartesiano</div>
-        <canvas id="graphCanvas" width="400" height="360"></canvas>
-        <div class="equation-display" id="eqDisplay">y = mx + b</div>
-        <div class="graph-info">
-          <span class="ginfo"><span class="ginfo-dot"></span> Función actual</span>
-          <span class="ginfo" id="gSlopeInfo">Pendiente: —</span>
-          <span class="ginfo" id="gInterceptInfo">Intercepto: —</span>
-        </div>
+  <!-- PRUEBA -->
+  <div id="screen-quiz" class="card hide">
+    <div class="pad">
+      <div class="prog-row"><span id="q-counter">Pregunta 1 de 25</span><span id="q-student"></span></div>
+      <div class="prog"><span id="prog-bar" style="width:4%"></span></div>
+      <div style="margin-top:22px">
+        <div class="eyebrow" id="q-tema">Tema</div>
+        <h2 id="q-text" style="font-size:21px;margin-top:6px;line-height:1.3"></h2>
       </div>
-      <div class="card">
-        <div class="question-tag">Pregunta <span id="qNum">1</span> de 10</div>
-        <div id="typeBadge" class="question-type-badge badge-pendiente">Pendiente</div>
-        <div class="question-text" id="questionText">Cargando...</div>
-        <div class="options-grid" id="optionsGrid"></div>
-        <div class="feedback" id="feedback"></div>
-        <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Siguiente pregunta →</button>
-      </div>
-      <div class="card concept-panel">
-        <div class="concept-title">Conceptos clave · Función lineal</div>
-        <div class="concepts-row">
-          <div class="concept-chip"><span class="chip-label">Forma general</span><span class="chip-value">y = mx + b</span></div>
-          <div class="concept-chip"><span class="chip-label">Pendiente (m)</span><span class="chip-value" id="chipM">—</span></div>
-          <div class="concept-chip"><span class="chip-label">Intercepto y (b)</span><span class="chip-value" id="chipB">—</span></div>
-          <div class="concept-chip"><span class="chip-label">Intercepto x</span><span class="chip-value" id="chipX0">—</span></div>
-          <div class="concept-chip"><span class="chip-label">f(2) =</span><span class="chip-value" id="chipF2">—</span></div>
-          <div class="concept-chip"><span class="chip-label">Dirección</span><span class="chip-value" id="chipDir">—</span></div>
-        </div>
+      <div id="q-extra" class="extra hide"></div>
+      <div id="q-illus" class="illus hide"></div>
+      <div class="opts" id="q-opts"></div>
+      <div style="display:flex;justify-content:space-between;margin-top:24px;gap:12px">
+        <button class="btn ghost" id="btn-prev">◀ Anterior</button>
+        <button class="btn" id="btn-next" disabled>Siguiente ▶</button>
       </div>
     </div>
   </div>
 
-  <!-- END SCREEN -->
-  <div class="end-screen" id="endScreen">
-    <div class="end-icon" id="endIcon">🎯</div>
-    <div class="end-title" id="endTitle">¡Simulación completada!</div>
-    <div class="end-sub" id="endSub">Resultados guardados</div>
-    <div class="end-stats">
-      <div class="end-stat"><span class="end-stat-num" id="endCorrect" style="color:var(--correct)">—</span><span class="end-stat-label">Correctas</span></div>
-      <div class="end-stat"><span class="end-stat-num" id="endWrong" style="color:var(--wrong)">—</span><span class="end-stat-label">Incorrectas</span></div>
-      <div class="end-stat"><span class="end-stat-num" id="endPct" style="color:var(--accent)">—</span><span class="end-stat-label">Aciertos</span></div>
+  <!-- RESULTADOS -->
+  <div id="screen-result" class="card hide">
+    <div class="band"><div style="position:relative;z-index:2">
+      <div class="eyebrow" style="color:var(--amber)">Resultados</div>
+      <h1 style="font-size:28px;margin-top:6px" id="res-name">—</h1>
+    </div></div>
+    <div class="pad">
+      <div class="score-ring">
+        <svg class="ring" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="50" fill="none" stroke="#d7dbe9" stroke-width="14"/>
+          <circle id="ring-fill" cx="60" cy="60" r="50" fill="none" stroke="var(--good)" stroke-width="14" stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="314" transform="rotate(-90 60 60)"/>
+          <text id="ring-txt" x="60" y="58" text-anchor="middle" font-family="Bricolage Grotesque,sans-serif" font-size="28" font-weight="800" fill="#15183a">0</text>
+          <text x="60" y="78" text-anchor="middle" font-size="11" fill="#1f2452" font-weight="700">de 25</text>
+        </svg>
+        <div>
+          <h2 id="res-msg" style="font-size:24px"></h2>
+          <p id="res-sub" style="font-size:14px;margin-top:4px;color:var(--navy)"></p>
+          <div id="res-saved" style="margin-top:12px"></div>
+        </div>
+      </div>
+      <h2 style="margin-top:26px;font-size:18px">Revisión pregunta por pregunta</h2>
+      <div class="review" id="res-review"></div>
+      <div style="margin-top:24px">
+        <button class="btn dark" id="btn-again">Nuevo estudiante</button>
+      </div>
     </div>
-    <div class="end-btns">
-      <button class="restart-btn" onclick="restartQuiz()">Nuevo intento →</button>
-    </div>
-    <div id="registerBox"></div>
   </div>
+
+  <div class="footmeta">Simulador de práctica · Matemáticas Saber 11 · I.E.T.A. Luruaco</div>
 </div>
 
 <script>
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMrKr8zH4a6saHbOvpy4MSwxh7_BkCoIi03_D_nyTF3YeVnP-Gz8psXTc4JJHhs_IjXg/exec";
-const ASIGNATURA = "Funciones Lineales 10°";
-const TOTAL_Q = 10;
+const ASIGNATURA = "Matemáticas 11°";
 
-let studentName='', studentCourse='';
-let correct=0, wrong=0, total=0;
-let answered=false;
+const SV = {
+  vennDep:`<svg width="260" height="150" viewBox="0 0 260 150"><g stroke="#15183a" stroke-width="2.5"><circle cx="105" cy="75" r="58" fill="rgba(90,179,255,.25)"/><circle cx="155" cy="75" r="58" fill="rgba(255,182,39,.30)"/></g><g font-family="DM Sans" font-weight="700" font-size="16" text-anchor="middle" fill="#15183a"><text x="78" y="80">20</text><text x="130" y="80">8</text><text x="182" y="80">12</text></g><g font-family="DM Sans" font-size="13" fill="#15183a"><text x="70" y="20">Fútbol</text><text x="170" y="20">Básquet</text><text x="222" y="140">Ninguno: 10</text></g></svg>`,
+  vennBici:`<svg width="260" height="150" viewBox="0 0 260 150"><g stroke="#15183a" stroke-width="2.5"><circle cx="105" cy="75" r="58" fill="rgba(90,179,255,.25)"/><circle cx="155" cy="75" r="58" fill="rgba(255,182,39,.30)"/></g><g font-family="DM Sans" font-weight="700" font-size="16" text-anchor="middle" fill="#15183a"><text x="78" y="80">25</text><text x="130" y="80">5</text><text x="182" y="80">20</text></g><g font-family="DM Sans" font-size="13" fill="#15183a"><text x="74" y="20">Carro</text><text x="166" y="20">Bicicleta</text><text x="210" y="140">Ninguno: 10</text></g></svg>`,
+  bars:`<svg width="280" height="170" viewBox="0 0 280 170"><line x1="35" y1="140" x2="265" y2="140" stroke="#15183a" stroke-width="2"/><line x1="35" y1="20" x2="35" y2="140" stroke="#15183a" stroke-width="2"/><g stroke="#15183a" stroke-width="2"><rect x="55" y="92" width="36" height="48" fill="#5ab3ff"/><rect x="105" y="60" width="36" height="80" fill="#ffb627"/><rect x="155" y="104" width="36" height="36" fill="#5ab3ff"/><rect x="205" y="76" width="36" height="64" fill="#5ab3ff"/></g><g font-family="DM Sans" font-size="12" text-anchor="middle" fill="#15183a"><text x="73" y="155">Ene</text><text x="123" y="155">Feb</text><text x="173" y="155">Mar</text><text x="223" y="155">Abr</text></g><g font-family="DM Sans" font-weight="700" font-size="12" text-anchor="middle" fill="#15183a"><text x="73" y="86">40</text><text x="123" y="54">60</text><text x="173" y="98">30</text><text x="223" y="70">50</text></g><text x="150" y="14" text-anchor="middle" font-family="DM Sans" font-size="11" fill="#1f2452">Ventas por mes (millones)</text></svg>`,
+  ramp:`<svg width="280" height="170" viewBox="0 0 280 170"><line x1="40" y1="140" x2="260" y2="140" stroke="#15183a" stroke-width="2"/><rect x="40" y="40" width="14" height="100" fill="#1f2452"/><line x1="54" y1="40" x2="220" y2="140" stroke="#ff5d73" stroke-width="3"/><line x1="127" y1="140" x2="127" y2="96" stroke="#ffb627" stroke-width="4"/><g font-family="DM Sans" font-size="12" fill="#15183a"><text x="18" y="95">3 m</text><text x="118" y="158">2 m</text><text x="138" y="120">h</text><text x="225" y="120">6 m (base total)</text></g></svg>`,
+  polar:`<svg width="220" height="200" viewBox="0 0 220 200"><g stroke="#c9cee0" stroke-width="1.5"><circle cx="110" cy="110" r="30" fill="none"/><circle cx="110" cy="110" r="55" fill="none"/><circle cx="110" cy="110" r="80" fill="none"/></g><line x1="110" y1="110" x2="205" y2="110" stroke="#15183a" stroke-width="1.5"/><circle cx="110" cy="110" r="4" fill="#15183a"/><g font-family="DM Sans" font-weight="700" font-size="12" fill="#1f2452"><circle cx="155" cy="80" r="5" fill="#ff5d73"/><text x="160" y="78">P(50, 60°)</text><circle cx="125" cy="62" r="5" fill="#5ab3ff"/><text x="86" y="52">Q(30, 90°)</text><circle cx="30" cy="110" r="5" fill="#1f9d6b"/><text x="10" y="128">R(70,180°)</text><circle cx="135" cy="98" r="5" fill="#f59e0b"/><text x="140" y="100">S(20,30°)</text></g><text x="180" y="125" font-family="DM Sans" font-size="10" fill="#15183a">Base</text></svg>`
+};
 
-const rnd=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
-const pick=arr=>arr[Math.floor(Math.random()*arr.length)];
-const shuffle=arr=>[...arr].sort(()=>Math.random()-0.5);
-const frmt=n=>Number.isInteger(n)?String(n):n.toFixed(2);
+const PREGUNTAS = [
+ {tema:"Promedio (estadística)",q:"En una tienda se registró el número de clientes atendidos durante 5 días: 18, 22, 19, 25 y 21. ¿Cuál es el promedio diario de clientes?",o:["20","21","22","25"],c:1},
+ {tema:"Interpretación de fórmulas",q:"Una papelería vende cuadernos a $4.000 entre semana y a $6.000 los fines de semana; a ese precio se le suma un impuesto del 10 %. Un cliente compra 3 cuadernos un martes y 2 un sábado. ¿Cuál expresión permite calcular el valor total a pagar?",o:["(3×4.000 + 2×6.000) × (1 + 0,10)","(3×4.000 + 2×6.000) × 0,10","(3 + 2) × (4.000 + 6.000) × 1,10","3×4.000×0,10 + 2×6.000"],c:0},
+ {tema:"Conjuntos · Diagrama de Venn",illus:SV.vennDep,q:"De 50 estudiantes se preguntó qué deporte practican. Según el diagrama, un profesor afirma en una tabla que 28 practican fútbol y 15 practican básquet. ¿Es válida esa información?",o:["Sí, porque los totales de la tabla coinciden con el diagrama.","No, porque en el diagrama 20 personas practican básquet y la tabla indica 15.","Sí, porque la suma de todos los grupos es 50.","No, porque no se incluyó a quienes no practican ningún deporte."],c:1},
+ {tema:"Combinatoria",q:"Para formar una pareja de baile se debe elegir 1 hombre y 1 mujer de un grupo con 4 hombres y 5 mujeres. ¿Cuántas parejas diferentes se pueden formar?",o:["9","18","20","45"],c:2},
+ {tema:"Lectura de tablas",extra:`<table><tr><th>Producto</th><th>Precio unitario</th><th>Unidades vendidas</th></tr><tr><td>A</td><td>$3.000</td><td>40</td></tr><tr><td>B</td><td>$5.000</td><td>30</td></tr><tr><td>C</td><td>$2.000</td><td>80</td></tr></table>`,q:"La tabla muestra las ventas de tres productos. ¿Cuál producto generó el mayor ingreso total (precio × unidades)?",o:["Producto A","Producto B","Producto C","Los tres generaron lo mismo"],c:2},
+ {tema:"Series y crecimiento exponencial",q:"Andrés ahorra así: el primer mes guarda $1.000 y cada mes siguiente duplica lo del mes anterior. ¿Cuánto habrá ahorrado en TOTAL al final del mes 5?",o:["$16.000","$31.000","$32.000","$62.000"],c:1},
+ {tema:"Porcentajes",q:"Camila gana $1.200.000 al mes y ahorra el 5 % de su sueldo cada mes. Si ahorra durante 8 meses, ¿cuánto dinero ahorrará en total?",o:["$60.000","$96.000","$480.000","$600.000"],c:2},
+ {tema:"Lectura de gráficas",illus:SV.bars,q:"La gráfica muestra las ventas de una empresa durante cuatro meses. ¿En cuál mes las ventas fueron mayores?",o:["Enero","Febrero","Marzo","Abril"],c:1},
+ {tema:"Razonamiento con porcentajes",q:"Una máquina clasificó 1.000 papas por peso y 400 de ellas pesan entre 25 y 30 g. ¿Qué porcentaje del total representa este grupo?",o:["35 %","25 %","60 %","40 %"],c:3},
+ {tema:"Muestreo (estadística)",q:"Para estimar la intención de voto de todo un país, una encuestadora llama solo a 500 personas de la ciudad capital. ¿Por qué el resultado puede diferir mucho de la realidad?",o:["Porque la única forma de obtener datos precisos es encuestar a toda la población.","Porque la muestra es demasiado grande y genera errores.","Porque solo se tiene en cuenta la opinión de una ciudad y no de todo el país.","Porque las encuestas telefónicas nunca son confiables."],c:2},
+ {tema:"Área",q:"Una torta rectangular de 40 cm de base por 30 cm de altura se reparte en porciones rectangulares iguales. Una porción mide 10 cm × 15 cm. ¿Cuál es el área de esa porción?",o:["40 cm²","150 cm²","225 cm²","1.200 cm²"],c:1},
+ {tema:"Conversión de unidades",q:"Para hallar el peso total de tres cajas (500 kg, 300 kg y 1 tonelada) un empleado calcula: 500 + 300 + 1 = 801. Esta solución es:",o:["Correcta, porque se suman los tres valores directamente.","Incorrecta, porque 1 tonelada equivale a 1.000 kg y las unidades deben ser iguales antes de sumar.","Correcta, porque el resultado se expresa en la unidad mayor.","Incorrecta, porque debió multiplicar en lugar de sumar."],c:1},
+ {tema:"Geometría · Área del círculo",q:"Un terreno rectangular tiene una zona en forma de cuarto de círculo de radio 4 m. ¿Cuál procedimiento permite hallar el área de ese cuarto de círculo? (Área del círculo = π·r²)",o:["Multiplicar 2 × π × 4.","Multiplicar π × 16 y dividir el resultado entre 4.","Multiplicar π × 4 y dividir entre 4.","Multiplicar 8 × 6 y dividir entre 4."],c:1},
+ {tema:"Interpretación de datos",extra:`<table><tr><th>Candidato</th><th>E</th><th>F</th><th>G</th><th>H</th><th>I</th></tr><tr><td>Votos</td><td>2.000</td><td>5.000</td><td>4.500</td><td>7.000</td><td>3.400</td></tr></table>`,q:"La tabla muestra los votos de cinco candidatos. ¿Cuál de las siguientes afirmaciones es FALSA?",o:["Con la tabla se puede identificar al candidato más votado.","El candidato F obtuvo más votos que el candidato H.","Con la tabla se puede calcular el total de votos.","El candidato H fue el más votado."],c:1},
+ {tema:"Patrones y tendencias",extra:`<table><tr><th>Mes</th><th>Ene</th><th>Feb</th><th>Mar</th><th>Abr</th></tr><tr><td>Ahorro</td><td>$130.000</td><td>$160.000</td><td>$190.000</td><td>$220.000</td></tr></table>`,q:"La tabla muestra el dinero ahorrado al finalizar cada mes. ¿Cuál es la tendencia del ahorro?",o:["Aumenta $30.000 cada mes.","Disminuye $30.000 cada mes.","Aumenta $100.000 cada mes.","Se mantiene constante."],c:0},
+ {tema:"Promedio",q:"Un taller registró el número de piezas reemplazadas en 3 vehículos: 6, 5 y 10. ¿Cuál es el promedio de piezas reemplazadas?",o:["6","7","10","21"],c:1},
+ {tema:"Conjuntos · Diagrama de Venn",illus:SV.vennBici,q:"En una encuesta sobre el transporte usado por 60 personas se obtuvo el diagrama. ¿Cuántas personas usan bicicleta en total?",o:["20","25","30","5"],c:1},
+ {tema:"Crecimiento exponencial",q:"El número de usuarios de una aplicación se duplica cada año. En 2020 tenía 5.000 usuarios. ¿Cuántos usuarios tendrá en 2024?",o:["40.000","20.000","160.000","80.000"],c:3},
+ {tema:"Teorema de Pitágoras",q:"Un triángulo rectángulo tiene catetos de 6 cm y 8 cm. ¿Cuál es la longitud de la hipotenusa?",o:["12 cm","48 cm","14 cm","10 cm"],c:3},
+ {tema:"Álgebra · Factorización",q:"La distancia recorrida se calcula con: (8)(4) + ½(2)(4²). ¿Cuál de las siguientes expresiones es equivalente, factorizando el tiempo (4)?",o:["4 × (8 + ½ × 2 × 4²)","4 × (8 + ½ × 2 × 4)","8 × (4 + ½ × 2 × 4)","4² × (8 + ½ × 2)"],c:1},
+ {tema:"Razonamiento cuantitativo",q:"Un archivo pesa 20 MB. La velocidad de descarga es 500 KB por segundo y 1 MB = 1.000 KB. ¿Cuál procedimiento NO permite calcular el tiempo (en segundos) de descarga?",o:["Multiplicar 20 por 1.000 y dividir el resultado entre 500.","Dividir 20 entre 500 y multiplicar el resultado por 1.000.","Dividir 500 entre 20 y multiplicar el resultado por 1.000.","Convertir 20 MB en 20.000 KB y dividir entre 500."],c:2},
+ {tema:"Semejanza de triángulos (Thales)",illus:SV.ramp,q:"Una rampa va desde lo alto de un muro de 3 m hasta el piso, a 6 m de la base del muro. A 2 m del muro se coloca una columna vertical de altura h. ¿Cuál procedimiento permite hallar h?",o:["Dividir 6 entre 4 y multiplicar por 3.","Dividir 2 entre 6 y multiplicar por 3.","Dividir 4 entre 6 y multiplicar el resultado por 3.","Multiplicar 3 × 6 y dividir entre 2."],c:2},
+ {tema:"Coordenadas polares",illus:SV.polar,q:"En coordenadas polares (r, θ), cuatro drones se ubican respecto a una base: P(50, 60°), Q(30, 90°), R(70, 180°) y S(20, 30°), donde r es la distancia a la base. ¿Cuál es el orden, del más cercano al más lejano de la base?",o:["R, P, Q, S","S, Q, P, R","Q, S, P, R","S, P, Q, R"],c:1},
+ {tema:"Operaciones con enteros",q:"Un repartidor sale de la tienda y avanza 4 cuadras (1ª entrega); para la 2ª avanza el doble de lo anterior; para la 3ª regresa 3 cuadras; finalmente avanza 2 cuadras hasta su casa. ¿Cuál operación da la distancia, en cuadras, entre la tienda y su casa?",o:["4 + 8 + 3 + 2","4 + 8 − 3 + 2","4 × 2 − 3 + 2","4 + 8 − 3 − 2"],c:1},
+ {tema:"Orden de números negativos",q:"Se midió la temperatura mínima de 4 ciudades: Ciudad 1: −7,6 °C; Ciudad 2: −7,09 °C; Ciudad 3: −7,62 °C; Ciudad 4: −7,53 °C. ¿Cuál es el orden de MENOR a MAYOR temperatura?",o:["Ciudad 1, Ciudad 3, Ciudad 4, Ciudad 2","Ciudad 3, Ciudad 1, Ciudad 4, Ciudad 2","Ciudad 2, Ciudad 4, Ciudad 1, Ciudad 3","Ciudad 3, Ciudad 4, Ciudad 1, Ciudad 2"],c:1}
+];
+const LETRAS=["A","B","C","D"];
 
-function buildEquation(m,b){
-  let s='y = ';
-  if(m===1)s+='x';else if(m===-1)s+='-x';else s+=`${frmt(m)}x`;
-  if(b>0)s+=` + ${b}`;else if(b<0)s+=` - ${Math.abs(b)}`;
-  return s;
-}
+let student={name:"",course:""};
+let answers=new Array(PREGUNTAS.length).fill(null);
+let current=0;
 
-function buildURL(nombre,curso,correctas,incorrectas,porcentaje,nota,fecha){
+const $=id=>document.getElementById(id);
+const screens=["screen-home","screen-quiz","screen-result"];
+function show(id){screens.forEach(s=>$(s).classList.toggle("hide",s!==id));window.scrollTo(0,0);}
+
+function buildURL(data){
   const params=new URLSearchParams({
-    asignatura:ASIGNATURA,nombre,curso,
-    correctas,incorrectas,porcentaje,nota,fecha
+    asignatura:ASIGNATURA,
+    nombre:data.nombre,
+    curso:data.curso,
+    puntaje:data.puntaje,
+    total:data.total,
+    porcentaje:data.porcentaje,
+    fecha:data.fecha
+  });
+  // Una entrada por pregunta: p1=A✓, p2=C✗, ...
+  PREGUNTAS.forEach((p,i)=>{
+    const letra=answers[i]===null?"-":LETRAS[answers[i]];
+    const bien=answers[i]===p.c;
+    params.append("p"+(i+1), letra+(bien?"✓":"✗"));
   });
   return SCRIPT_URL+"?"+params.toString();
 }
 
-function startQuiz(){
-  const n=document.getElementById('studentName').value.trim();
-  const c=document.getElementById('studentCourse').value;
-  if(!n||!c){const e=document.getElementById('regErr');e.style.display='block';setTimeout(()=>e.style.display='none',3000);return;}
-  studentName=n;studentCourse=c;
-  document.getElementById('registerScreen').style.display='none';
-  document.getElementById('quizContent').style.display='block';
-  document.getElementById('scoreBoard').style.display='flex';
-  loadQuestion();
-}
+$("btn-start").onclick=()=>{
+  const n=$("inp-name").value.trim(),c=$("inp-course").value.trim();
+  if(n.length<3){$("home-err").textContent="✗ Escribe el nombre completo.";return;}
+  if(!c){$("home-err").textContent="✗ Escribe el curso.";return;}
+  $("home-err").textContent="";
+  student={name:n,course:c};
+  answers=new Array(PREGUNTAS.length).fill(null);current=0;
+  $("q-student").textContent=n.split(" ")[0]+" · "+c;
+  show("screen-quiz");renderQuestion();
+};
 
-function generateFunction(){
-  const ms=[-3,-2,-1,1,2,3,-0.5,0.5],bs=[-4,-3,-2,-1,0,1,2,3,4];
-  return{m:pick(ms),b:pick(bs)};
-}
-function ensureOneCorrect(opts,correctOpt){
-  if(!opts.some(o=>o.correct))opts[0]=correctOpt;
-  let found=false;opts.forEach(o=>{if(o.correct){if(found)o.correct=false;else found=true;}});
-}
-function generateQuestion(fn){
-  const{m,b}=fn,eq=buildEquation(m,b);
-  const types=[
-    ()=>{const vals=shuffle([...new Set([m,m+1,m-1,m+2,-m])].slice(0,4));const opts=vals.map(v=>({label:`m = ${frmt(v)}`,value:v,correct:v===m}));ensureOneCorrect(opts,{label:`m = ${frmt(m)}`,correct:true});return{type:'Pendiente',badge:'badge-pendiente',text:`Para la función <strong>${eq}</strong>, ¿cuál es la pendiente (m)?`,options:opts};},
-    ()=>{const vals=shuffle([...new Set([b,b+1,b-1,b+2,b-3])].slice(0,4));const opts=vals.map(v=>({label:`b = ${v}`,correct:v===b}));ensureOneCorrect(opts,{label:`b = ${b}`,correct:true});return{type:'Intercepto en y',badge:'badge-intercepto',text:`¿Dónde corta la función <strong>${eq}</strong> al eje Y?`,options:opts};},
-    ()=>{const x=pick([-3,-2,-1,0,1,2,3,4]),res=m*x+b;const dec=[res+1,res-1,res+2,res-2].filter(v=>v!==res);const opts=shuffle([res,...dec.slice(0,3)]).map(v=>({label:`f(${x}) = ${frmt(v)}`,correct:v===res}));ensureOneCorrect(opts,{label:`f(${x}) = ${frmt(res)}`,correct:true});return{type:'Evaluación',badge:'badge-punto',text:`Si <strong>${eq}</strong>, ¿cuánto vale f(${x})?`,options:opts};},
-    ()=>{if(m===0)return generateQuestion(fn);const x0=-b/m;const dec=[x0+1,x0-1,x0+2,-x0].filter(v=>v!==x0);const opts=shuffle([x0,...dec.slice(0,3)]).map(v=>({label:`x = ${frmt(v)}`,correct:Math.abs(v-x0)<0.001}));ensureOneCorrect(opts,{label:`x = ${frmt(x0)}`,correct:true});return{type:'Intercepto en x',badge:'badge-intercepto',text:`¿Dónde corta la función <strong>${eq}</strong> al eje X?`,options:opts};},
-    ()=>{const pos=m>0;const opts=shuffle([{label:'Creciente (m > 0)',correct:pos},{label:'Decreciente (m < 0)',correct:!pos},{label:'Constante (m = 0)',correct:false},{label:'No es función lineal',correct:false}]);return{type:'Comportamiento',badge:'badge-grafica',text:`¿La función <strong>${eq}</strong> es creciente o decreciente?`,options:opts};},
-    ()=>{const cands=[generateFunction(),generateFunction(),generateFunction()].filter(f=>!(f.m===m&&f.b===b));const opts=shuffle([{label:eq,correct:true},...cands.slice(0,3).map(f=>({label:buildEquation(f.m,f.b),correct:false}))]);return{type:'Identificación',badge:'badge-grafica',text:`¿Cuál es la ecuación con pendiente <strong>m = ${frmt(m)}</strong> e intercepto <strong>b = ${b}</strong>?`,options:opts};},
-    ()=>{const x=pick([1,2,3,-1]),yT=m*x+b;const dec=[yT+1,yT-1,yT+3].filter(v=>v!==yT);const opts=shuffle([yT,...dec.slice(0,3)]).map(v=>({label:`(${x}, ${frmt(v)})`,correct:v===yT}));ensureOneCorrect(opts,{label:`(${x}, ${frmt(yT)})`,correct:true});return{type:'Punto en la recta',badge:'badge-punto',text:`¿Cuál de estos puntos pertenece a la función <strong>${eq}</strong>?`,options:opts};},
-  ];
-  return pick(types)();
-}
-
-function drawGraph(m,b){
-  const canvas=document.getElementById('graphCanvas');
-  const ctx=canvas.getContext('2d'),W=canvas.width,H=canvas.height;
-  ctx.clearRect(0,0,W,H);
-  const S=28,ox=W/2,oy=H/2;
-  ctx.fillStyle='#0a0e1a';ctx.fillRect(0,0,W,H);
-  ctx.strokeStyle='rgba(0,229,255,0.07)';ctx.lineWidth=1;
-  for(let x=ox%S;x<W;x+=S){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
-  for(let y=oy%S;y<H;y+=S){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
-  ctx.strokeStyle='rgba(0,229,255,0.25)';ctx.lineWidth=1.5;
-  ctx.beginPath();ctx.moveTo(0,oy);ctx.lineTo(W,oy);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(ox,0);ctx.lineTo(ox,H);ctx.stroke();
-  ctx.fillStyle='rgba(100,116,139,0.8)';ctx.font='11px Space Mono,monospace';ctx.textAlign='center';
-  for(let i=-6;i<=6;i++){if(!i)continue;ctx.fillText(i,ox+i*S,oy+16);ctx.textAlign='right';ctx.fillText(-i,ox-6,oy-i*S+4);ctx.textAlign='center';}
-  ctx.fillText('x',W-14,oy-8);ctx.textAlign='right';ctx.fillText('y',ox+18,14);ctx.textAlign='center';
-  const toC=(x,y)=>({cx:ox+x*S,cy:oy-y*S});
-  const x0s=-(ox/S+1),x0e=(W-ox)/S+1;
-  ctx.strokeStyle='#00e5ff';ctx.lineWidth=2.5;ctx.shadowColor='rgba(0,229,255,0.5)';ctx.shadowBlur=8;
-  ctx.beginPath();
-  const p0=toC(x0s,m*x0s+b);ctx.moveTo(p0.cx,p0.cy);
-  for(let xi=x0s;xi<=x0e;xi+=0.1){const p=toC(xi,m*xi+b);ctx.lineTo(p.cx,p.cy);}
-  ctx.stroke();ctx.shadowBlur=0;
-  const dot=(x,y,col,lbl)=>{const{cx,cy}=toC(x,y);if(cx<0||cx>W||cy<0||cy>H)return;ctx.beginPath();ctx.arc(cx,cy,5,0,Math.PI*2);ctx.fillStyle=col;ctx.fill();ctx.strokeStyle='#0a0e1a';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle=col;ctx.font='bold 10px Space Mono,monospace';ctx.textAlign='left';ctx.fillText(lbl,cx+8,cy-6);};
-  dot(0,b,'#a78bfa',`(0,${frmt(b)})`);
-  if(m!==0){const xi=-b/m;if(Math.abs(xi)<7)dot(xi,0,'#34d399',`(${frmt(xi)},0)`);}
-}
-
-let currentFn=null;
-function loadQuestion(){
-  answered=false;
-  const fn=generateFunction();currentFn=fn;
-  const q=generateQuestion(fn);
-  drawGraph(fn.m,fn.b);
-  document.getElementById('eqDisplay').textContent=buildEquation(fn.m,fn.b);
-  document.getElementById('gSlopeInfo').textContent=`Pendiente: ${frmt(fn.m)}`;
-  document.getElementById('gInterceptInfo').textContent=`Intercepto y: ${fn.b}`;
-  document.getElementById('chipM').textContent=frmt(fn.m);
-  document.getElementById('chipB').textContent=fn.b;
-  document.getElementById('chipX0').textContent=fn.m!==0?frmt(-fn.b/fn.m):'∞';
-  document.getElementById('chipF2').textContent=frmt(fn.m*2+fn.b);
-  document.getElementById('chipDir').textContent=fn.m>0?'↗ Creciente':fn.m<0?'↘ Decreciente':'→ Constante';
-  document.getElementById('qNum').textContent=total+1;
-  document.getElementById('progressFill').style.width=`${(total/TOTAL_Q)*100}%`;
-  const badge=document.getElementById('typeBadge');
-  badge.textContent=q.type;badge.className=`question-type-badge ${q.badge}`;
-  document.getElementById('questionText').innerHTML=q.text;
-  const grid=document.getElementById('optionsGrid');grid.innerHTML='';
-  const letters=['A','B','C','D'];
-  q.options.forEach((opt,i)=>{
-    const btn=document.createElement('button');
-    btn.className='option-btn';
-    btn.innerHTML=`<span class="option-letter">${letters[i]}</span>${opt.label}`;
-    btn.onclick=()=>selectOption(btn,opt.correct,q.options);
-    grid.appendChild(btn);
+function renderQuestion(){
+  const p=PREGUNTAS[current];
+  $("q-counter").textContent=`Pregunta ${current+1} de ${PREGUNTAS.length}`;
+  $("prog-bar").style.width=((current+1)/PREGUNTAS.length*100)+"%";
+  $("q-tema").textContent=p.tema;
+  $("q-text").textContent=p.q;
+  const ex=$("q-extra");
+  if(p.extra){ex.innerHTML=p.extra;ex.classList.remove("hide");}else{ex.classList.add("hide");ex.innerHTML="";}
+  const il=$("q-illus");
+  if(p.illus){il.innerHTML=p.illus;il.classList.remove("hide");}else{il.classList.add("hide");il.innerHTML="";}
+  const box=$("q-opts");box.innerHTML="";
+  p.o.forEach((txt,i)=>{
+    const d=document.createElement("div");
+    d.className="opt"+(answers[current]===i?" sel":"");
+    d.innerHTML=`<span class="key">${LETRAS[i]}</span><span>${txt}</span>`;
+    d.onclick=()=>{answers[current]=i;renderQuestion();};
+    box.appendChild(d);
   });
-  const fb=document.getElementById('feedback');
-  fb.className='feedback';fb.textContent='';
-  document.getElementById('nextBtn').className='next-btn';
+  $("btn-prev").style.visibility=current===0?"hidden":"visible";
+  $("btn-next").disabled=answers[current]===null;
+  $("btn-next").textContent=current===PREGUNTAS.length-1?"Ver resultados ✓":"Siguiente ▶";
 }
+$("btn-prev").onclick=()=>{if(current>0){current--;renderQuestion();}};
+$("btn-next").onclick=()=>{
+  if(answers[current]===null)return;
+  if(current<PREGUNTAS.length-1){current++;renderQuestion();}else finishQuiz();
+};
 
-function selectOption(btn,isCorrect,allOpts){
-  if(answered)return;
-  answered=true;total++;
-  document.querySelectorAll('.option-btn').forEach((b,i)=>{
-    b.disabled=true;
-    if(allOpts[i].correct)b.classList.add('correct');
-    else if(b===btn&&!isCorrect)b.classList.add('wrong');
-  });
-  const fb=document.getElementById('feedback');
-  if(isCorrect){correct++;fb.className='feedback correct-fb show';fb.innerHTML='✓ ¡Correcto! Excelente análisis de la función.';}
-  else{wrong++;fb.className='feedback wrong-fb show';fb.innerHTML=`✗ Incorrecto. La respuesta correcta es: <strong>${allOpts.find(o=>o.correct)?.label||''}</strong>`;}
-  document.getElementById('sCorrect').textContent=correct;
-  document.getElementById('sWrong').textContent=wrong;
-  document.getElementById('sTotal').textContent=total;
-  const nb=document.getElementById('nextBtn');
-  nb.className='next-btn show';
-  nb.textContent=total>=TOTAL_Q?'Ver resultados →':'Siguiente pregunta →';
-}
+function finishQuiz(){
+  let score=0;
+  PREGUNTAS.forEach((p,i)=>{if(answers[i]===p.c)score++;});
+  const total=PREGUNTAS.length,pct=Math.round(score/total*100);
+  const record={nombre:student.name,curso:student.course,puntaje:score,total,porcentaje:pct,fecha:new Date().toLocaleString("es-CO")};
 
-function nextQuestion(){
-  if(total>=TOTAL_Q){showEndScreen();return;}
-  loadQuestion();
-}
+  $("res-name").textContent=student.name;
+  $("ring-fill").setAttribute("stroke-dashoffset",314-(314*score/total));
+  $("ring-fill").setAttribute("stroke",pct>=80?"#1f9d6b":pct>=50?"#f59e0b":"#ff5d73");
+  $("ring-txt").textContent=score;
 
-function showEndScreen(){
-  const pct=Math.round((correct/TOTAL_Q)*100);
-  const nota=parseFloat((1+correct*0.4).toFixed(1));
-  const fecha=new Date().toLocaleString('es-CO');
+  let msg,sub;
+  if(pct>=85){msg="¡Excelente! 🎯";sub="Gran dominio del razonamiento matemático.";}
+  else if(pct>=70){msg="¡Muy bien! 👏";sub="Buen desempeño; afina algunos temas.";}
+  else if(pct>=50){msg="Vas progresando";sub="Repasa los temas marcados como incorrectos.";}
+  else{msg="A reforzar 📚";sub="Conviene repasar los conceptos y volver a practicar.";}
+  $("res-msg").textContent=msg;$("res-sub").textContent=sub;
 
-  document.getElementById('quizContent').style.display='none';
-  const end=document.getElementById('endScreen');end.style.display='block';
-  document.getElementById('endCorrect').textContent=correct;
-  document.getElementById('endWrong').textContent=wrong;
-  document.getElementById('endPct').textContent=pct+'%';
-  document.getElementById('endSub').textContent=`${studentName} · ${studentCourse}`;
-
-  let icon='🎯',title='¡Simulación completada!';
-  if(pct>=90){icon='🏆';title='¡Dominio excelente!';}
-  else if(pct>=70){icon='⭐';title='¡Muy buen trabajo!';}
-  else if(pct>=50){icon='📈';title='Vas por buen camino';}
-  else{icon='📚';title='Sigue practicando';}
-  document.getElementById('endIcon').textContent=icon;
-  document.getElementById('endTitle').textContent=title;
-
-  // Botón de registro
-  const url=buildURL(studentName,studentCourse,correct,wrong,pct,nota,fecha);
-  document.getElementById('registerBox').innerHTML=`
-    <div class="register-note">
-      <strong style="color:var(--accent)">⚠ Paso final:</strong> Haz clic en el botón para registrar tu resultado en el sistema del docente. Se abrirá una pestaña — si ves <strong>{"ok":true}</strong> quedó guardado correctamente.
+  const url=buildURL(record);
+  $("res-saved").innerHTML=`
+    <div class="note" style="margin-top:0">
+      <strong>⚠ Paso final:</strong> Haz clic en el botón para registrar tu resultado. Se abrirá una pestaña — si ves <strong>{"ok":true}</strong> quedó guardado.
     </div>
-    <button class="restart-btn" style="margin-top:16px;background:linear-gradient(135deg,#10b981,#059669)"
-      onclick="window.open('${url}','_blank');this.textContent='✓ Resultado registrado';this.style.opacity='.7'">
-      📋 Registrar resultado de ${studentName}
+    <button class="btn" style="margin-top:12px" onclick="window.open('${url}','_blank');this.textContent='✓ Resultado registrado';this.style.background='#1f9d6b';this.style.color='#fff'">
+      📋 Registrar resultado de ${student.name}
     </button>`;
+
+  // Revisión detallada
+  const rev=$("res-review");rev.innerHTML="";
+  PREGUNTAS.forEach((p,i)=>{
+    const bien=answers[i]===p.c;
+    const marcada=answers[i]===null?"—":LETRAS[answers[i]]+") "+p.o[answers[i]];
+    const correcta=LETRAS[p.c]+") "+p.o[p.c];
+    const d=document.createElement("div");d.className="rev";
+    d.innerHTML=`<div class="q"><span class="tag ${bien?'ok':'no'}">${bien?'✓ Correcta':'✗ Incorrecta'}</span> Pregunta ${i+1} · ${p.tema}</div>
+      <div class="a" style="margin-top:6px">${p.q}</div>
+      <div class="a" style="margin-top:6px">Tu respuesta: <strong>${marcada}</strong>
+      ${bien?'':` · Respuesta correcta: <strong style="color:var(--good)">${correcta}</strong>`}</div>`;
+    rev.appendChild(d);
+  });
+  show("screen-result");
 }
 
-function restartQuiz(){
-  correct=0;wrong=0;total=0;studentName='';studentCourse='';
-  ['sCorrect','sWrong','sTotal'].forEach(id=>document.getElementById(id).textContent=0);
-  document.getElementById('progressFill').style.width='0%';
-  document.getElementById('endScreen').style.display='none';
-  document.getElementById('scoreBoard').style.display='none';
-  document.getElementById('registerScreen').style.display='block';
-  document.getElementById('studentName').value='';
-  document.getElementById('studentCourse').value='';
-}
+$("btn-again").onclick=()=>{$("inp-name").value="";$("inp-course").value="";show("screen-home");};
+show("screen-home");
 </script>
-</body>
-</html>
