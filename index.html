@@ -3,7 +3,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-
 <style>
   :root{--ink:#15183a;--navy:#1f2452;--amber:#ffb627;--amber-deep:#f59e0b;--sky:#5ab3ff;--paper:#fbfaf6;--cream:#eef0f7;--rose:#ff5d73;--good:#1f9d6b;--bad:#e0492c;}
   *{box-sizing:border-box;margin:0;padding:0}
@@ -34,8 +33,6 @@
   .opt:hover{transform:translateX(3px)}
   .opt .key{flex:0 0 34px;height:34px;border:2px solid var(--ink);border-radius:9px;display:grid;place-items:center;font-weight:700;background:var(--cream)}
   .opt.sel{background:var(--amber)}.opt.sel .key{background:var(--navy);color:var(--amber)}
-  .opt.correct{background:#d4f5e6;border-color:var(--good)}.opt.correct .key{background:var(--good);color:#fff}
-  .opt.wrong{background:#fbe0d8;border-color:var(--bad)}.opt.wrong .key{background:var(--bad);color:#fff}
   .prog-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;font-size:13px;font-weight:700}
   .prog{height:12px;border:2px solid var(--ink);border-radius:50px;background:#fff;overflow:hidden}
   .prog>span{display:block;height:100%;background:var(--amber-deep);transition:width .3s}
@@ -53,16 +50,11 @@
   .tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 9px;border-radius:50px;border:2px solid var(--ink);margin-right:6px}
   .tag.ok{background:#d4f5e6}.tag.no{background:#fbe0d8}
   .note{font-size:12.5px;color:var(--navy);background:rgba(255,182,39,.22);border:1.5px dashed var(--amber-deep);border-radius:10px;padding:10px 12px;margin-top:14px}
-  .note.red{background:rgba(224,73,44,.12);border-color:var(--bad);color:var(--bad)}
-  .note.green{background:rgba(31,157,107,.12);border-color:var(--good);color:var(--good)}
-  .spinner{display:inline-block;width:18px;height:18px;border:3px solid #ccc;border-top-color:var(--navy);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:8px}
-  @keyframes spin{to{transform:rotate(360deg)}}
   .footmeta{text-align:center;font-size:12px;color:var(--amber-deep);margin-top:16px;font-weight:600}
   @media(max-width:560px){.pad{padding:20px}.band{padding:20px}h1{font-size:28px}}
 </style>
 
 <div class="wrap">
-
   <!-- REGISTRO -->
   <div id="screen-home" class="card">
     <div class="band">
@@ -73,14 +65,13 @@
       </div>
     </div>
     <div class="pad">
-      <p style="font-size:15px;line-height:1.55">Prueba de práctica tipo Saber 11 con <strong>25 preguntas</strong>. Registra tu nombre y curso, responde todas las preguntas y al terminar verás tu puntaje. El docente podrá ver los resultados en su hoja de Google Sheets.</p>
+      <p style="font-size:15px;line-height:1.55">Prueba de práctica tipo Saber 11 con <strong>25 preguntas</strong>. Registra tu nombre y curso, responde todas las preguntas y al terminar verás tu puntaje detallado.</p>
       <div class="field"><label for="inp-name">Nombre completo del estudiante</label>
         <input id="inp-name" type="text" placeholder="Ej.: Juan Sebastián Gómez" autocomplete="off"></div>
       <div class="field"><label for="inp-course">Curso</label>
         <input id="inp-course" type="text" placeholder="Ej.: 11°A" autocomplete="off"></div>
       <div style="display:flex;gap:12px;align-items:center;margin-top:24px;flex-wrap:wrap">
         <button class="btn" id="btn-start">Comenzar prueba ▶</button>
-        <button class="link" id="btn-teacher">Panel del docente</button>
       </div>
       <p id="home-err" style="color:var(--bad);font-weight:700;margin-top:10px"></p>
     </div>
@@ -122,44 +113,23 @@
         <div>
           <h2 id="res-msg" style="font-size:24px"></h2>
           <p id="res-sub" style="font-size:14px;margin-top:4px;color:var(--navy)"></p>
-          <p id="res-saved" style="font-size:13px;margin-top:10px;font-weight:700"></p>
+          <div id="res-saved" style="margin-top:12px"></div>
         </div>
       </div>
-      <h2 style="margin-top:26px;font-size:18px">Revisión de respuestas</h2>
+      <h2 style="margin-top:26px;font-size:18px">Revisión pregunta por pregunta</h2>
       <div class="review" id="res-review"></div>
-      <div style="display:flex;gap:12px;margin-top:24px;flex-wrap:wrap">
+      <div style="margin-top:24px">
         <button class="btn dark" id="btn-again">Nuevo estudiante</button>
-        <button class="link" id="btn-teacher2">Panel del docente</button>
       </div>
     </div>
   </div>
 
-  <!-- PANEL DOCENTE -->
-  <div id="screen-teacher" class="card hide">
-    <div class="band"><div style="position:relative;z-index:2">
-      <div class="eyebrow" style="color:var(--amber)">Acceso docente</div>
-      <h1 style="font-size:26px;margin-top:6px">Resultados en Google Sheets</h1>
-    </div></div>
-    <div class="pad">
-      <div class="note green" style="margin-bottom:16px">
-        ✓ Los resultados se guardan automáticamente en tu hoja de Google Sheets al terminar cada prueba. Para ver la tabla completa, abre directamente tu hoja de cálculo en Google Drive.
-      </div>
-      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:16px">
-        <button class="btn" id="btn-open-sheets">Abrir Google Sheets ↗</button>
-        <button class="link" id="btn-back-home">← Inicio</button>
-      </div>
-      <div class="note">
-        <strong>Cómo usar:</strong> Cada vez que un estudiante termina la prueba, su resultado (nombre, curso, puntaje, porcentaje y fecha) se registra automáticamente en la hoja <strong>"Resultados"</strong> de tu Google Sheets. Desde allí puedes filtrar, ordenar o exportar a Excel.
-      </div>
-    </div>
-  </div>
-
-  <div class="footmeta">Simulador de práctica · Matemáticas Saber 11 · Preguntas originales</div>
+  <div class="footmeta">Simulador de práctica · Matemáticas Saber 11 · I.E.T.A. Luruaco</div>
 </div>
 
 <script>
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMrKr8zH4a6saHbOvpy4MSwxh7_BkCoIi03_D_nyTF3YeVnP-Gz8psXTc4JJHhs_IjXg/exec";
-const SHEETS_URL = "https://docs.google.com/spreadsheets/";
+const ASIGNATURA = "Matemáticas 11°";
 
 const SV = {
   vennDep:`<svg width="260" height="150" viewBox="0 0 260 150"><g stroke="#15183a" stroke-width="2.5"><circle cx="105" cy="75" r="58" fill="rgba(90,179,255,.25)"/><circle cx="155" cy="75" r="58" fill="rgba(255,182,39,.30)"/></g><g font-family="DM Sans" font-weight="700" font-size="16" text-anchor="middle" fill="#15183a"><text x="78" y="80">20</text><text x="130" y="80">8</text><text x="182" y="80">12</text></g><g font-family="DM Sans" font-size="13" fill="#15183a"><text x="70" y="20">Fútbol</text><text x="170" y="20">Básquet</text><text x="222" y="140">Ninguno: 10</text></g></svg>`,
@@ -203,35 +173,39 @@ let answers=new Array(PREGUNTAS.length).fill(null);
 let current=0;
 
 const $=id=>document.getElementById(id);
-const screens=["screen-home","screen-quiz","screen-result","screen-teacher"];
+const screens=["screen-home","screen-quiz","screen-result"];
 function show(id){screens.forEach(s=>$(s).classList.toggle("hide",s!==id));window.scrollTo(0,0);}
 
-/* ===== ENVÍO A GOOGLE SHEETS ===== */
-function sendToSheets(data) {
-  const params = new URLSearchParams({
-    nombre:     data.nombre,
-    curso:      data.curso,
-    puntaje:    data.puntaje,
-    total:      data.total,
-    porcentaje: data.porcentaje,
-    fecha:      data.fecha
+function buildURL(data){
+  const detalle=PREGUNTAS.map((p,i)=>{
+    const letra=answers[i]===null?"-":LETRAS[answers[i]];
+    const bien=answers[i]===p.c;
+    return `${i+1}:${letra}${bien?"✓":"✗"}`;
+  }).join("|");
+  const params=new URLSearchParams({
+    asignatura:ASIGNATURA,
+    nombre:data.nombre,
+    curso:data.curso,
+    puntaje:data.puntaje,
+    total:data.total,
+    porcentaje:data.porcentaje,
+    fecha:data.fecha,
+    detalle:detalle
   });
-  return SCRIPT_URL + "?" + params.toString();
+  return SCRIPT_URL+"?"+params.toString();
 }
 
-/* ===== INICIO ===== */
 $("btn-start").onclick=()=>{
-  const n=$("inp-name").value.trim(), c=$("inp-course").value.trim();
-  if(n.length<3){$("home-err").textContent="✗ Escribe el nombre completo del estudiante.";return;}
-  if(!c){$("home-err").textContent="✗ Escribe el curso (ej.: 11°A).";return;}
+  const n=$("inp-name").value.trim(),c=$("inp-course").value.trim();
+  if(n.length<3){$("home-err").textContent="✗ Escribe el nombre completo.";return;}
+  if(!c){$("home-err").textContent="✗ Escribe el curso.";return;}
   $("home-err").textContent="";
   student={name:n,course:c};
-  answers=new Array(PREGUNTAS.length).fill(null); current=0;
+  answers=new Array(PREGUNTAS.length).fill(null);current=0;
   $("q-student").textContent=n.split(" ")[0]+" · "+c;
-  show("screen-quiz"); renderQuestion();
+  show("screen-quiz");renderQuestion();
 };
 
-/* ===== PREGUNTAS ===== */
 function renderQuestion(){
   const p=PREGUNTAS[current];
   $("q-counter").textContent=`Pregunta ${current+1} de ${PREGUNTAS.length}`;
@@ -242,7 +216,7 @@ function renderQuestion(){
   if(p.extra){ex.innerHTML=p.extra;ex.classList.remove("hide");}else{ex.classList.add("hide");ex.innerHTML="";}
   const il=$("q-illus");
   if(p.illus){il.innerHTML=p.illus;il.classList.remove("hide");}else{il.classList.add("hide");il.innerHTML="";}
-  const box=$("q-opts"); box.innerHTML="";
+  const box=$("q-opts");box.innerHTML="";
   p.o.forEach((txt,i)=>{
     const d=document.createElement("div");
     d.className="opt"+(answers[current]===i?" sel":"");
@@ -256,68 +230,53 @@ function renderQuestion(){
 }
 $("btn-prev").onclick=()=>{if(current>0){current--;renderQuestion();}};
 $("btn-next").onclick=()=>{
-  if(answers[current]===null) return;
+  if(answers[current]===null)return;
   if(current<PREGUNTAS.length-1){current++;renderQuestion();}else finishQuiz();
 };
 
-/* ===== FINALIZAR ===== */
-async function finishQuiz(){
+function finishQuiz(){
   let score=0;
   PREGUNTAS.forEach((p,i)=>{if(answers[i]===p.c)score++;});
-  const total=PREGUNTAS.length, pct=Math.round(score/total*100);
+  const total=PREGUNTAS.length,pct=Math.round(score/total*100);
   const record={nombre:student.name,curso:student.course,puntaje:score,total,porcentaje:pct,fecha:new Date().toLocaleString("es-CO")};
 
-  // Mostrar pantalla con spinner mientras se envía
   $("res-name").textContent=student.name;
   $("ring-fill").setAttribute("stroke-dashoffset",314-(314*score/total));
   $("ring-fill").setAttribute("stroke",pct>=80?"#1f9d6b":pct>=50?"#f59e0b":"#ff5d73");
   $("ring-txt").textContent=score;
+
   let msg,sub;
   if(pct>=85){msg="¡Excelente! 🎯";sub="Gran dominio del razonamiento matemático.";}
   else if(pct>=70){msg="¡Muy bien! 👏";sub="Buen desempeño; afina algunos temas.";}
   else if(pct>=50){msg="Vas progresando";sub="Repasa los temas marcados como incorrectos.";}
   else{msg="A reforzar 📚";sub="Conviene repasar los conceptos y volver a practicar.";}
-  $("res-msg").textContent=msg; $("res-sub").textContent=sub;
-  $("res-saved").innerHTML=`<span class="spinner"></span> Guardando resultado...`;
-  show("screen-result");
+  $("res-msg").textContent=msg;$("res-sub").textContent=sub;
 
-  // Revisión
-  const rev=$("res-review"); rev.innerHTML="";
-  PREGUNTAS.forEach((p,i)=>{
-    const bien=answers[i]===p.c;
-    const d=document.createElement("div"); d.className="rev";
-    d.innerHTML=`<div class="q">${i+1}. ${p.q}</div>
-      <div class="a"><span class="tag ${bien?'ok':'no'}">${bien?'Correcta':'Incorrecta'}</span>
-      Tu respuesta: <strong>${answers[i]===null?'—':LETRAS[answers[i]]+') '+p.o[answers[i]]}</strong>
-      ${bien?'':`<br>Respuesta correcta: <strong>${LETRAS[p.c]}) ${p.o[p.c]}</strong>`}</div>`;
-    rev.appendChild(d);
-  });
-
-  // Generar URL de registro
-  const url = sendToSheets(record);
+  const url=buildURL(record);
   $("res-saved").innerHTML=`
     <div class="note" style="margin-top:0">
-      <strong>⚠ Paso final obligatorio:</strong> Para registrar tu resultado, debes hacer clic en el botón de abajo. Se abrirá una pestaña nueva — si ves <strong>{"ok":true}</strong> el registro fue exitoso. Luego cierra esa pestaña.
+      <strong>⚠ Paso final:</strong> Haz clic en el botón para registrar tu resultado. Se abrirá una pestaña — si ves <strong>{"ok":true}</strong> quedó guardado.
     </div>
-    <button class="btn" style="margin-top:12px" onclick="window.open('${url}','_blank')">
+    <button class="btn" style="margin-top:12px" onclick="window.open('${url}','_blank');this.textContent='✓ Resultado registrado';this.style.background='#1f9d6b';this.style.color='#fff'">
       📋 Registrar resultado de ${student.name}
-    </button>
-    <p id="reg-confirm" style="margin-top:10px;font-weight:700;color:var(--good)"></p>`;
+    </button>`;
 
-  // Marcar como registrado al hacer clic
-  setTimeout(()=>{
-    const btn = $("res-saved").querySelector("button");
-    if(btn) btn.addEventListener("click", ()=>{
-      setTimeout(()=>{ document.getElementById("reg-confirm").textContent="✓ Si viste {\"ok\":true}, tu resultado quedó guardado."; },1500);
-    });
-  },100);
+  // Revisión detallada
+  const rev=$("res-review");rev.innerHTML="";
+  PREGUNTAS.forEach((p,i)=>{
+    const bien=answers[i]===p.c;
+    const marcada=answers[i]===null?"—":LETRAS[answers[i]]+") "+p.o[answers[i]];
+    const correcta=LETRAS[p.c]+") "+p.o[p.c];
+    const d=document.createElement("div");d.className="rev";
+    d.innerHTML=`<div class="q"><span class="tag ${bien?'ok':'no'}">${bien?'✓ Correcta':'✗ Incorrecta'}</span> Pregunta ${i+1} · ${p.tema}</div>
+      <div class="a" style="margin-top:6px">${p.q}</div>
+      <div class="a" style="margin-top:6px">Tu respuesta: <strong>${marcada}</strong>
+      ${bien?'':` · Respuesta correcta: <strong style="color:var(--good)">${correcta}</strong>`}</div>`;
+    rev.appendChild(d);
+  });
+  show("screen-result");
 }
 
 $("btn-again").onclick=()=>{$("inp-name").value="";$("inp-course").value="";show("screen-home");};
-$("btn-teacher").onclick=()=>show("screen-teacher");
-$("btn-teacher2").onclick=()=>show("screen-teacher");
-$("btn-back-home").onclick=()=>show("screen-home");
-$("btn-open-sheets").onclick=()=>window.open(SHEETS_URL,"_blank");
-
 show("screen-home");
 </script>
